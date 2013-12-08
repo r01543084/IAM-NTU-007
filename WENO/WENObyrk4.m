@@ -20,8 +20,8 @@ x = x0 : dx : xEnd;%切空間網格
 t = 0  : dt : tEnd;%切時間網格
 %%
 %mean progream
-u = heaviside(x)-heaviside(x-3);%initial condition
-%u = sin(x);
+%u = heaviside(x)-heaviside(x-3);%initial condition
+u = sin(x);
 for j = 1:length(t)
     F=[];%淨空F
     dF=[];%same
@@ -35,8 +35,8 @@ for j = 1:length(t)
     f = a*u_weno;%flux term
 	F = 0.5*((f(2,:)+f(1,:))-apha*(u_weno(2,:)-u_weno(1,:)));%LF flux
 	u_next = u - ( F(2:end)-F(1:end-1) )/dx*dt;%mean equation
-    uu = heaviside(x-a*dt*j)-heaviside(x-3-a*dt*j);
-    %uu = sin(x-a*dt*j);
+    %uu = heaviside(x-a*dt*j)-heaviside(x-3-a*dt*j);
+    uu = sin(x-a*dt*j);
     u_next(1)=u(end);%bc
     u = u_next;%renew u
     plot(x,u,'.',x,uu,'--')
