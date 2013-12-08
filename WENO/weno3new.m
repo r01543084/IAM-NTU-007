@@ -31,9 +31,9 @@ epsilon = 10^-6;%5th order = 10^-(order+1)
 %                                         i+1/2                            
 gammaR = [1/16 5/8 5/16];
 
-wRt1 = (gammaR(1)./(epsilon+beta1.^2));%w are 'not' real w  
-wRt2 = (gammaR(2)./(epsilon+beta2.^2));
-wRt3 = (gammaR(3)./(epsilon+beta3.^2));
+wRt1 = (gammaR(1)./((epsilon+beta1).^2));%w are 'not' real w  
+wRt2 = (gammaR(2)./((epsilon+beta2).^2));
+wRt3 = (gammaR(3)./((epsilon+beta3).^2));
 
 wR1 = wRt1./(wRt1+wRt2+wRt3);%w are real w
 wR2 = wRt2./(wRt1+wRt2+wRt3);
@@ -56,9 +56,9 @@ uoutR = (3/8*umm-5/4*um+15/8*u).*wR1+...
 %                                  i-1/2                            
 gammaL = [5/16 5/8 1/16];
 
-wLt1 = (gammaL(1)./(epsilon+beta1.^2));%w are 'not' real w 
-wLt2 = (gammaL(2)./(epsilon+beta2.^2));
-wLt3 = (gammaL(3)./(epsilon+beta3.^2));
+wLt1 = (gammaL(1)./((epsilon+beta1).^2));%w are 'not' real w 
+wLt2 = (gammaL(2)./((epsilon+beta2).^2));
+wLt3 = (gammaL(3)./((epsilon+beta3).^2));
 
 wL1 = wLt1./(wLt1+wLt2+wLt3);%w are real w
 wL2 = wLt2./(wLt1+wLt2+wLt3);
