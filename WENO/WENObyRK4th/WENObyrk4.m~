@@ -23,7 +23,7 @@ t = 0  : dt : tEnd;%切時間網格
 type = 1;%(1)Linear Advection, (2)Burgers' equation
 %%
 %mean progream
-u = exp(-(x+4).^2)+heaviside(x)-heaviside(x-3);%initial condition
+u = exp(-(x+4).^2)+heaviside(x)-heaviside(x-3)+(3*(x-5)).*;%initial condition
 %u = sin(x);
 for j = 1:length(t)
     F=[];%淨空F
