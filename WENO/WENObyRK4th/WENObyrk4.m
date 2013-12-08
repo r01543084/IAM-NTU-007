@@ -10,9 +10,9 @@
 clear all;close all;clc;
 x0   = -3*pi        ;%X初始位置
 xEnd = 3*pi         ;%X結束位置
-dx   = 0.1         ;%每dx切一格
-tEnd = 10            ;%從0開始計算tEnd秒 
-CFL  = 0.9          ;%CFL number
+dx   = 0.1          ;%每dx切一格
+tEnd = 10           ;%從0開始計算tEnd秒 
+CFL  = 0.4          ;%CFL number
 a    = 1            ;%constant
 dt   = CFL*dx/a     ;%每dt切一格
 %%
