@@ -31,7 +31,7 @@ for j = 1:length(t)
     apha  = max(abs(a));%·L¤Àflux
     u_expand = [u(end-1:end) u u(1:2)];
     for i = 1:length(u_expand)-4
-        u_weno(:,i) = weno3new(u_expand(i:i+4));%use weno3 method
+        u_weno(:,i) = weno3(u_expand(i:i+4));%use weno3 method
     end
     u_weno = [u_weno(1,end) u_weno(1,:);
               u_weno(2,:) u_weno(2,end)];%periodic bc
