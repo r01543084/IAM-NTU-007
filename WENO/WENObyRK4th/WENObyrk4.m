@@ -33,10 +33,10 @@ for j = 1:length(t)
     u_next=[];%²bªÅu_next 
     %%
     %rk method 4th order
-    k1 = dt*( (-LF_flux(type,a,weno3new(u)))/dx );
-    k2 = dt*( (-LF_flux(type,a,weno3new(u+k1/2)))/dx );
-    k3 = dt*( (-LF_flux(type,a,weno3new(u+k2/2)))/dx );
-    k4 = dt*( (-LF_flux(type,a,weno3new(u+k3)))/dx );
+    k1 = dt*( (-LF_flux(type,a,weno3(u)))/dx );
+    k2 = dt*( (-LF_flux(type,a,weno3(u+k1/2)))/dx );
+    k3 = dt*( (-LF_flux(type,a,weno3(u+k2/2)))/dx );
+    k4 = dt*( (-LF_flux(type,a,weno3(u+k3)))/dx );
 	u_next = u + 1/6*(k1+2*k2+2*k3+k4);%mean equation
     
     %uu = heaviside(x-a*dt*j)-heaviside(x-3-a*dt*j);
