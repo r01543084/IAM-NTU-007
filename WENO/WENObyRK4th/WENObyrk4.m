@@ -11,32 +11,36 @@ clear all;close all;clc;
 x0   = -2*pi        ;%X初始位置
 xEnd = 2*pi         ;%X結束位置
 dx   = 0.1         ;%每dx切一格
-tEnd = 3            ;%從0開始計算tEnd秒 
-CFL  = 0.01          ;%CFL number
-a    = 10            ;%constant
+tEnd = 10            ;%從0開始計算tEnd秒 
+CFL  = 0.7          ;%CFL number
+a    = 1            ;%constant
 dt   = CFL*dx/a     ;%每dt切一格
 %%
 x = x0 : dx : xEnd;%切空間網格
 t = 0  : dt : tEnd;%切時間網格
 %%
+%flux type
+type = 1;%(1)Linear Advection, (2)Burgers' equation
+%%
 %mean progream
-u = heaviside(x)-heaviside(x-3);%initial condition
-%u = sin(x);
+%u = heaviside(x)-heaviside(x-3);%initial condition
+u = sin(x);
 for j = 1:length(t)
     F=[];%淨空F
     dF=[];%same
     f=[];%same
     u_weno=[];%same
-    u_next=[];%淨空u_next
-    apha  = max(abs(a));%微分flux
-    u_weno = weno3new(u);%use weno3 method
-    u_weno = [u_weno(1,end) u_weno(1,:);
-              u_weno(2,:) u_weno(2,end)];%periodic bc
-    f = a*u_weno;%flux term
-	F = 0.5*((f(2,:)+f(1,:))-apha*(u_weno(2,:)-u_weno(1,:)));%LF flux
-	u_next = u - ( F(2:end)-F(1:end-1) )/dx*dt;%mean equation
-    uu = heaviside(x-a*dt*j)-heaviside(x-3-a*dt*j);
-    %uu = sin(x-a*dt*j);
+    u_next=[];%淨空u_next 
+    %%
+    %rk method 4th order
+    k1 = dt*( (-LF_flux(type,a,weno3new(u)))/dx );
+    k2 = dt*( (-LF_flux(type,a,weno3new(u+k1/2)))/dx );
+    k3 = dt*( (-LF_flux(type,a,weno3new(u+k2/2)))/dx );
+    k4 = dt*( (-LF_flux(type,a,weno3new(u+k3)))/dx );
+	u_next = u + 1/6*(k1+2*k2+2*k3+k4);%mean equation
+    
+    %uu = heaviside(x-a*dt*j)-heaviside(x-3-a*dt*j);
+    uu = sin(x-a*dt*j);
     u_next(1)=u(end);%bc
     u = u_next;%renew u
     plot(x,u,'.',x,uu,'--')
@@ -45,5 +49,6 @@ for j = 1:length(t)
     ylabel('u(t)');%垂直座標名稱
     title(['time(t) = ',num2str(t(j))]); % 圖形標題
     grid on
+    error(j)=sum(abs(uu-u));
     pause(dt)
 end

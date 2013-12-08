@@ -70,3 +70,6 @@ outL = (-1/8*umm+3/4*um+3/8*u).*wL1+ ...
        (15/8*u-5/4*up+3/8*upp).*wL3;
      
 uout = [uoutR;outL];
+
+uout = [uoutR(end) uoutR;
+          outL outL(end)];%periodic bc
