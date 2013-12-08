@@ -30,8 +30,8 @@ for j = 1:length(t)
     u_next=[];%²bªÅu_next
     apha  = max(abs(a));%·L¤Àflux
     u_weno = weno3new(u);%use weno3 method
-    u_weno = [u_weno(1,end) u_weno(1,:);
-              u_weno(2,:) u_weno(2,end)];%periodic bc
+    u_weno = [0 u_weno(1,:);
+              u_weno(2,:) 0];%periodic bc
     f = a*u_weno;%flux term
 	F = 0.5*((f(2,:)+f(1,:))-apha*(u_weno(2,:)-u_weno(1,:)));%LF flux
 	u_next = u - ( F(2:end)-F(1:end-1) )/dx*dt;%mean equation
