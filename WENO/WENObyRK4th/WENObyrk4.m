@@ -10,9 +10,9 @@
 clear all;close all;clc;
 x0   = -3*pi        ;%X初始位置
 xEnd = 3*pi         ;%X結束位置
-dx   = 0.1          ;%每dx切一格
+dx   = 0.05          ;%每dx切一格
 tEnd = 10           ;%從0開始計算tEnd秒 
-CFL  = 0.4          ;%CFL number
+CFL  = 0.1          ;%CFL number
 a    = 1            ;%constant
 dt   = CFL*dx/a     ;%每dt切一格
 %%
@@ -49,6 +49,6 @@ for j = 1:length(t)
     ylabel('u(t)');%垂直座標名稱
     title(['time(t) = ',num2str(t(j))]); % 圖形標題
     grid on
-    error(j)=sum(abs(uu-u));
+    %error(j)=sum(abs(uu-u));
     pause(dt)
 end
