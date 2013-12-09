@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                         %
-%               WENO3   5th order by RK4                                  %
+%               WENO3   5th order by RK3                                  %
 %                      Atmosphere@ntu 2013.12.2                           %
 %                                   thanks Tony                           %
 %                                                                         %
@@ -11,9 +11,9 @@ clear all;close all;clc;
 x0   = -3*pi        ;%X初始位置
 xEnd = 3*pi         ;%X結束位置
 dx   = 0.05          ;%每dx切一格
-tEnd = 3           ;%從0開始計算tEnd秒 
+tEnd = 10           ;%從0開始計算tEnd秒 
 CFL  = 0.7          ;%CFL number
-a    = 10            ;%constant
+a    = 1            ;%constant
 dt   = CFL*dx/a     ;%每dt切一格
 %%
 x = x0 : dx : xEnd;%切空間網格
@@ -33,11 +33,10 @@ for j = 1:length(t)
     u_next=[];%淨空u_next 
     %%
     %rk method 4th order
-    k1 = ( (-LF_flux(type,a,weno3(u)))        /dx );
-    k2 = ( (-LF_flux(type,a,weno3(u+k1/2*dt)))/dx );
-    k3 = ( (-LF_flux(type,a,weno3(u+k2/2*dt)))/dx );
-    k4 = ( (-LF_flux(type,a,weno3(u+k3*dt)))  /dx );
-	u_next = u + 1/6*(k1+2*k2+2*k3+k4)*dt;%mean equation
+    k1 = ( (-LF_flux(type,a,weno3(u)))                 /dx );
+    k2 = ( (-LF_flux(type,a,weno3(u+dt*k1/2)))         /dx );
+    k3 = ( (-LF_flux(type,a,weno3(u+(k1+k2)*(dt/2)/2)))/dx );
+	u_next = u + 1/6*(k1+k2+4*k3)*dt;%mean equation
     
     uu = exp(-(x+4-a*dt*j).^2)+heaviside(x-a*dt*j)-heaviside(x-3-a*dt*j);
     %uu = sin(x-a*dt*j);
@@ -49,6 +48,6 @@ for j = 1:length(t)
     ylabel('u(t)');%垂直座標名稱
     title(['time(t) = ',num2str(t(j))]); % 圖形標題
     grid on
-    error(j)=sum(abs(uu-u)/length(u));
+    %error(j)=sum(abs(uu-u));
     pause(dt)
 end
