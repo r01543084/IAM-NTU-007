@@ -36,12 +36,10 @@ for j = 1:length(t)
     k1 = ( (-LF_flux(type,a,weno3(u)))                 /dx );
     k2 = ( (-LF_flux(type,a,weno3(u+dt*k1/2)))         /dx );
     k3 = ( (-LF_flux(type,a,weno3(u+(k1+k2)*(dt/2)/2)))/dx );
-	u_next = u + 1/6*(k1+k2+4*k3)*dt;%mean equation
+	u = u + 1/6*(k1+k2+4*k3)*dt;%mean equation
     
     uu = exp(-(x+4-a*dt*j).^2)+heaviside(x-a*dt*j)-heaviside(x-3-a*dt*j);
     %uu = sin(x-a*dt*j);
-    u_next(1)=u(end);%bc
-    u = u_next;%renew u
     plot(x,u,'.',x,uu,'--')
     axis([x0-1, xEnd+1, min(uu)-0.5, max(uu)+0.5])
     xlabel('x');%水平座標名稱

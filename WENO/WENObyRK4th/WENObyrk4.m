@@ -6,6 +6,7 @@
 %                                                                         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
+%periodic bc in LF_flux
 %輸入條件
 clear all;close all;clc;
 x0   = -3*pi        ;%X初始位置
@@ -37,12 +38,10 @@ for j = 1:length(t)
     k2 = ( (-LF_flux(type,a,weno3(u+k1/2*dt)))/dx );
     k3 = ( (-LF_flux(type,a,weno3(u+k2/2*dt)))/dx );
     k4 = ( (-LF_flux(type,a,weno3(u+k3*dt)))  /dx );
-	u_next = u + 1/6*(k1+2*k2+2*k3+k4)*dt;%mean equation
+	u = u + 1/6*(k1+2*k2+2*k3+k4)*dt;%mean equation
     
     uu = exp(-(x+4-a*dt*j).^2)+heaviside(x-a*dt*j)-heaviside(x-3-a*dt*j);
     %uu = sin(x-a*dt*j);
-    u_next(1)=u(end);%bc
-    u = u_next;%renew u
     plot(x,u,'.',x,uu,'--')
     axis([x0-1, xEnd+1, min(uu)-0.5, max(uu)+0.5])
     xlabel('x');%水平座標名稱
