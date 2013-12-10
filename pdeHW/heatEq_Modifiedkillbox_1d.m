@@ -7,11 +7,11 @@
 clear all;close all;clc;
 %時間空間、離散
 dx = 0.1;
-dt = 0.1;
+dt = 0.01;
 x0 = 0;
 xEnd = 10;
-tEnd = 20;
-k = 10;%heat coef.
+tEnd = 10;
+k = 20;%heat coef.
 x = x0:dx:xEnd;
 t = 0:dt:tEnd;
 u = ones(1,length(x));
