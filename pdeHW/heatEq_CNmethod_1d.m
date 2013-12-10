@@ -2,11 +2,11 @@
 %Crank-Nicolson 1D heat equation
 %use Thomas Algorithm solver
 %by Atmosphere @ NTU 2013.12.9
-
+%%%%%%%%%%%%%%%%%%   WARING 遞迴關係式僅能用for loop!!!  %%%%%%%%%%%%%%%%%%%%%
 %%
 clear all;close all;clc;
 %時間空間、離散
-dx = 0.5;
+dx = 0.1;
 dt = 0.01;
 x0 = 0;
 xEnd = 10;
@@ -18,14 +18,13 @@ r = k*dt/(2*dx^2)
 u = ones(1,length(x));
 
 %Thomas Algorithm solver
-dj = ones(1,length(u)-2)*(1+2*r);
-bj = ones(1,length(u)-3)*(-r);
 aj = ones(1,length(u)-3)*(-r);
+bj = ones(1,length(u)-3)*(-r);
+dj = ones(1,length(u)-2)*(1+2*r);
 
-dk = dj(2:end)-(bj.*aj./dj(1:end-1));
-dk = [dj(1) dk];
-    
-
+for i = 2:length(u)-2
+    dj(i) = dj(i)-bj(i-1)/dj(i-1)*aj(i-1);%get new dj
+end
 
 %bc
 u(1) = 1;%左端點溫度
@@ -42,35 +41,14 @@ for i = 1:length(t)
     um  = circshift(u,[0 -1]);%u2
     umm = circshift(u,[0 -2]);%u3
     uT = u(2:end-1);%modified CN
-    c = r*u+(1-2*r)*um+r*umm;
-    c(end-1:end) = [];%最後兩個不可算在內
-    c(1) = c(1)+r*u(1);
-    c(end) = c(end)+r*u(end);
+    cj = r*u+(1-2*r)*um+r*umm;
+    cj(end-1:end) = [];%最後兩個不可算在內
+    cj(1) = cj(1)+r*u(1);
+    cj(end) = cj(end)+r*u(end);
 
     %===============solving loop==========
-    
-    ck = c(2:end) - ( bj.*c(1:end-1)./dk(1:end-1) );
-    ck = [c(1) ck];
-    
-    uT(end) = ck(end)/dk(end);%back substitution according
-    
-    uT(end-1:-1:1) = (ck(end-1:-1:1)-(aj(end:-1:1).*uT(end:-1:2)))...
-                     ./dk(end-1:-1:1);%main equation
-    u = [u(1) uT u(end)];
-    
-        
-%     dk = dj(2:end)-bj.*aj./dj(1:end-1);
-%     dk = [dj(1) dk];
-%     
-%     ck = c(2:end) - ( bj.*c(1:end-1)./dk(1:end-1) );
-%     ck = [c(1) ck];
-%     
-%     u(2:end-2) = (ck(1:end-1)-(aj(1:end).*uT))...
-%                      ./dk(1:end-1);%main equation
-%                  
-% 	u(end-1) = ck(end)/dk(end);%back substitution according
 
-%    u(2:end-1) = thomas(aj,bj,c,dj,uT);
+    u(2:end-1) = thomas(aj,bj,cj,dj,uT);
     
 	plot(x,u,'-*')
     grid on

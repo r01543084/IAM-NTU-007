@@ -1,24 +1,12 @@
 %THOMAS ALGORITHM
-function [uk] = thomas(aj,bj,c,dj,u)
+function [u] = thomas(aj,bj,cj,dj,u)
 
-    dk = dj(2:end)-bj.*aj./dj(1:end-1);
-    dk = [dj(1) dk];
+    for i = 2:length(u)
+        cj(i) = cj(i)-bj(i-1)/dj(i-1)*cj(i-1);
+    end
     
-    ck = c(2:end) - ( bj.*c(1:end-1)./dk(1:end-1) );
-    ck = [c(1) ck];
+    u(end) = cj(end)/dj(end);%back substitution according
     
-    uk = (ck(1:end-1)-(aj(1:end).*u))...
-                        ./dk(1:end-1);%main equation
-                 
-	uk = [uk ck(end)/dk(end)];%back substitution according
-    
-%     dk = dj(2:end)-bj.*aj./dj(1:end-1);
-%     dk = [dj(1) dk];
-%     
-%     ck = c(2:end) - ( bj.*c(1:end-1)./dk(1:end-1) );
-%     ck = [c(1) ck];
-%     
-%     u(2:end-2) = (ck(1:end-1)-(aj(1:end).*uT))...
-%                      ./dk(1:end-1);%main equation
-%                  
-% 	u(end-1) = ck(end)/dk(end);%back substitution according
+    for i = length(u)-1:-1:1
+        u(i) = (cj(i)-aj(i)*u(i+1))/dj(i);
+    end
