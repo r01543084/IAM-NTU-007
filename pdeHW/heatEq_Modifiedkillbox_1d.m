@@ -1,5 +1,5 @@
 %%
-%Crank-Nicolson 1D heat equation
+%Modified Box Methods 1D heat equation
 %use Thomas Algorithm solver
 %by Atmosphere @ NTU 2013.12.9
 
@@ -7,11 +7,11 @@
 clear all;close all;clc;
 %時間空間、離散
 dx = 1/5;
-dt = 2*dx^2;
+dt = 0.01;
 x0 = 0;
 xEnd = 1;
 tEnd = 3;
-k = 1;%heat coef.
+k = 0.1;%heat coef.
 x = x0:dx:xEnd;
 t = 0:dt:tEnd;
 r = k*dt/(2*dx^2);
@@ -23,8 +23,8 @@ bj = ones(1,length(u)-3)*(-r);
 aj = ones(1,length(u)-3)*(-r);
 
 %bc
-u(1) = 1;%左端點溫度
-u(end) = 10;%右端點溫度
+u(1) = -1;%左端點溫度
+u(end) = 100;%右端點溫度
 
 %%
 %mean loop
@@ -51,11 +51,12 @@ for i = 1:length(t)
     ck = [c(1) ck];
     
     u(end-2:-1:2) = (ck(end-1:-1:1)-(aj(end:-1:1).*u(end-1:-1:3)))...
-                     ./dk(end-1:-1:1);
-	u(end-1) = r*u()
+                     ./dk(end-1:-1:1);%main equation
+                 
+	u(end-1) = ck(end)/dk(end);%back substitution according
+    
 	plot(x,u,'.')
-    u
-    pause()
+    grid on
+    pause(dt)
+    
 end
-    
-    

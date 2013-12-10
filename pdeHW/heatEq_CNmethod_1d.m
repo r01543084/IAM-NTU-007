@@ -11,7 +11,7 @@ dt = 0.01;
 x0 = 0;
 xEnd = 1;
 tEnd = 3;
-k = 1;%heat coef.
+k = 0.1;%heat coef.
 x = x0:dx:xEnd;
 t = 0:dt:tEnd;
 r = k*dt/(2*dx^2);
@@ -23,8 +23,8 @@ bj = ones(1,length(u)-3)*(-r);
 aj = ones(1,length(u)-3)*(-r);
 
 %bc
-u(1) = 1;%オ狠翴放
-u(end) = 10;%狠翴放
+u(1) = -1;%オ狠翴放
+u(end) = 100;%狠翴放
 
 %%
 %mean loop
@@ -37,24 +37,28 @@ for i = 1:length(t)
     
     um  = circshift(u,[0 -1]);%u2
     umm = circshift(u,[0 -2]);%u3
-    
+    uT = u(3:end-1);
     c = r*u+(1-2*r)*um+r*umm;
     c(end-1:end) = [];%程ㄢぃ衡ず
     c(1) = c(1)+r*u(1);
     c(end) = c(end)+r*u(end);
     
     %===============solving loop==========
-    dk = dj(2:end)-bj.*aj./dj(1:end-1);
-    dk = [dj(1) dk];
     
-    ck = c(2:end) - ( bj.*c(1:end-1)./dk(1:end-1) );
-    ck = [c(1) ck];
+%     dk = dj(2:end)-bj.*aj./dj(1:end-1);
+%     dk = [dj(1) dk];
+%     
+%     ck = c(2:end) - ( bj.*c(1:end-1)./dk(1:end-1) );
+%     ck = [c(1) ck];
+%     
+%     u(2:end-2) = (ck(1:end-1)-(aj(1:end).*uT))...
+%                      ./dk(1:end-1);%main equation
+%                  
+% 	u(end-1) = ck(end)/dk(end);%back substitution according
+
+    u(2:end-1) = thomas(aj,bj,c,dj,uT);
     
-    u(end-2:-1:2) = (ck(end-1:-1:1)-(aj(end:-1:1).*u(end-1:-1:3)))...
-                     ./dk(end-1:-1:1);
-	u(end-1) = ck(end)/dk(end);%back substitution according
-    
-	plot(x,u,'.')
+	plot(x,u,'-*')
     grid on
     pause(dt)
     
