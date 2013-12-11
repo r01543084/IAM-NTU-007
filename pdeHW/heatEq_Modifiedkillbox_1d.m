@@ -20,7 +20,7 @@ u = ones(1,length(x));
 aj = ones(1,length(u)-3)*(dx/dt-2*k/dx);
 bj = ones(1,length(u)-3)*(dx/dt-2*k/dx);
 dj = ones(1,length(u)-2)*(dx/dt+dx/dt+2*k/dx+2*k/dx);
-for i = 2:length(u)-2
+for i = 2:length(dj)
     dj(i) = dj(i)-bj(i-1)/dj(i-1)*aj(i-1);%get new dj
 end
 

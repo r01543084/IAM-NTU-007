@@ -22,7 +22,7 @@ aj = ones(1,length(u)-3)*(-r);
 bj = ones(1,length(u)-3)*(-r);
 dj = ones(1,length(u)-2)*(1+2*r);
 
-for i = 2:length(u)-2
+for i = 2:length(dj)
     dj(i) = dj(i)-bj(i-1)/dj(i-1)*aj(i-1);%get new dj
 end
 
