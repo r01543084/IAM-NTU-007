@@ -46,38 +46,7 @@ end
 %%
 %main loop
 for n = 1:length(t)
-    
-    uT = u(:,2:end-1);%ui,j
-    uTp = circshift(uT,[-1 0]);%ui,j+1
-    uTpp = circshift(uT,[-2 0]);%ui,j+1
-    
-    %x direction
-    for i = 2:length(x)-1
-        umx  = circshift(u(i,:),[0 -1]);%u2
-        ummx = circshift(u(i,:),[0 -2]);%u3
-        uTx = u(i,2:end-1);
-        cjx = rx*u(i,:)+(1-2*rx)*umx+rx*ummx;
-        cjx(end-1:end) = [];%最後兩個不可算在內
-        cjx(1) = cjx(1)+rx*u(i,1);
-        cjx(end) = cjx(end)+rx*u(i,end);
-        %===============solving loop==========
-        
-        u(i,2:end-1) = thomas(ajx,bjx,cjx,djx,uTx);
-    end
-    
-    %y direction
-    for i = 2:length(y)-1
-        umy  = circshift(u(:,i),[-1 0]);%u2
-        ummy = circshift(u(:,i),[-2 0]);%u3
-        uTy = u(2:end-1,i);
-        cjy = ry*u(:,i)+(1-2*ry)*umy+ry*ummy;
-        cjy(end-1:end) = [];%最後兩個不可算在內
-        cjy(1) = cjy(1)+ry*u(1,i);
-        cjy(end) = cjy(end)+ry*u(end,i);
-        %===============solving loop==========
-        
-        u(2:end-1,i) = thomas(ajy,bjy,cjy,djy,uTy);
-    end
+
     
 	[C h]=contourf(u);
     clabel(C,h)

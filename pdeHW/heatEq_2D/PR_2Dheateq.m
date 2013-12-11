@@ -47,33 +47,13 @@ end
 %main loop
 for n = 1:length(t)
     
-    uT = u(2:end-1,:);%ui,j
-    uTp = circshift(uT,[-1 0]);%ui,j+1
-    uTpp = circshift(uT,[-2 0]);%ui,j+2
-    cj1 = ry*uTpp+(1+2*ry)*uTp+ry*uT;
-    cj1(:,end-1:end) = [];%最後兩個不可算在內
-    
-        %===============solving loop==========
-	u(2:end-1,:) = thomas2d(ajx,bjx,cj1,djx,uT);
-    
-%     %y direction
-%     for i = 2:length(y)-1
-%         umy  = circshift(u(:,i),[-1 0]);%u2
-%         ummy = circshift(u(:,i),[-2 0]);%u3
-%         uTy = u(2:end-1,i);
-%         cjy = ry*u(:,i)+(1-2*ry)*umy+ry*ummy;
-%         cjy(end-1:end) = [];%最後兩個不可算在內
-%         cjy(1) = cjy(1)+ry*u(1,i);
-%         cjy(end) = cjy(end)+ry*u(end,i);
-%         %===============solving loop==========
-%         
-%         u(2:end-1,i) = thomas(ajy,bjy,cjy,djy,uTy);
-%     end
+    up = circshift(u,[0 -1]); %ui,j+1
+    upp = circshift(u,[0 -2]);%ui,j+2
     
 	[C h]=contourf(u);
     clabel(C,h)
     caxis([0 20])
     contourcbar
-    pause()
+    pause(dt)
     
 end
