@@ -12,7 +12,7 @@ xEnd = 10;
 y0 = 0;
 yEnd = 10;
 tEnd = 10;
-k = 30;%heat coef.
+k = 10;%heat coef.
 x = x0:dx:xEnd;
 y = y0:dy:yEnd;
 t = 0:dt:tEnd;
@@ -85,6 +85,7 @@ for n = 1:length(t)
     clabel(C,h)
     caxis([0 20])
     contourcbar
-    pause(dt)
+    dt*n
+    pause()
     
 end

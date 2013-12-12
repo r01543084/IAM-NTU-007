@@ -11,7 +11,7 @@ dt = 0.01;
 x0 = 0;
 xEnd = 10;
 tEnd = 10;
-k = 20;%heat coef.
+k = 10;%heat coef.
 x = x0:dx:xEnd;
 t = 0:dt:tEnd;
 r = k*dt/(2*dx^2)
@@ -27,8 +27,8 @@ for i = 2:length(dj)
 end
 
 %bc
-u(1) = 1;%左端點溫度
-u(end) = 10;%右端點溫度
+u(1) = 10;%左端點溫度
+u(end) = 1;%右端點溫度
 
 %%
 %mean loop
@@ -52,7 +52,10 @@ for i = 1:length(t)
     
 	plot(x,u,'-*')
     grid on
-    pause(dt)
+	xlabel('x');%水平座標名稱
+    ylabel('T(t,x)');%垂直座標名稱
+    dt*i
+    pause()
     
 end
     

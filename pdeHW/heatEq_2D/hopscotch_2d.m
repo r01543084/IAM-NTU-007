@@ -6,19 +6,25 @@ clear all;close all;clc;
 %丁丁瞒床
 dx = 0.5;
 dy = 0.5;
-dt = 0.001;
+dt = 0.01;
 x0 = 0;
 xEnd = 10;
 y0 = 0;
 yEnd = 10;
 tEnd = 10;
-k = 50;%heat coef.
+k = 10;%heat coef.
 x = x0:dx:xEnd;
 y = y0:dy:yEnd;
 t = 0:dt:tEnd;
-u = zeros(length(x),length(y));%initial condition
+u = ones(length(x),length(y));%initial condition
 rx = dt*k/dx^2
 ry = dt*k/dy^2
+%bc
+u(1,:)   = 0;%y=0放
+u(end,:) = 20;%y=yEnd放
+
+u(:,1)   = 0;%x=0放
+u(:,end) = 10;%x=xEnd放
 %bc
 u(1,:)   = 0;%y=0放
 u(end,:) = 20;%y=yEnd放
@@ -43,6 +49,7 @@ for n = 1:length(t)
     clabel(C,h)
     caxis([0 20])
     contourcbar
+    dt*n
     pause(dt)
     
 end
