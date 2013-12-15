@@ -22,17 +22,15 @@ t = 0  : dt : tEnd;%切時間網格
 %%
 %flux type
 type = 1;%(1)Linear Advection, (2)Burgers' equation
-%%
-%mean progream
+
+%initial condition
 %u = exp(-(x+4).^2)+heaviside(x)-heaviside(x-3);%initial condition
 u = sin(x);
+
+%%
+%mean progream
 for j = 1:length(t)
-    F=[];%淨空F
-    dF=[];%same
-    f=[];%same
-    u_weno=[];%same
-    u_next=[];%淨空u_next 
-    %%
+
     %rk method 4th order
     k1 = ( (-LF_flux(type,a,weno3(u)))        /dx );
     k2 = ( (-LF_flux(type,a,weno3(u+k1/2*dt)))/dx );
@@ -49,6 +47,5 @@ for j = 1:length(t)
     ylabel('u(t)');%垂直座標名稱
     title(['time(t) = ',num2str(t(j))]); % 圖形標題
     grid on
-    error(j)=sum(abs(uu-u)/length(u));
     pause(dt)
 end
