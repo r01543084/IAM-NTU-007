@@ -5,7 +5,6 @@ clc
 close all
 %%
 %initial condition
-
 x0 = -3*pi;
 xEnd = 3*pi;
 dx = 0.3;
@@ -20,16 +19,18 @@ cfly = .1;
 dt = min(cflx*dx/u,cfly*dy/v);
 cflx = dt*u/dx
 cfly = dt*v/dy
+
 %%
 %時間空間離散
-
 x= x0:dx:xEnd;
 y= y0:dy:yEnd;
 t = 0:dt:tEnd;
+
 %%
 [X,Y] = meshgrid(x,y);
-U = heaviside(X)-heaviside(X-2)+heaviside(Y)-heaviside(Y-2);
+%U = heaviside(X)-heaviside(X-2)+heaviside(Y)-heaviside(Y-2);
 %U = heaviside(X)-heaviside(X-2)+sin(Y);
+U = exp(-*(X).^2-(Y).^2);
 for i = 1:length(t)
     U_next = zeros(length(x),length(y));
     U_next(:,2:end) = U(:,2:end)-cflx*(U(:,2:end)-U(:,1:end-1));%x
