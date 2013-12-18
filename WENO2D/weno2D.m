@@ -18,8 +18,8 @@ dy   = 0.1          ;%每dy切一格
 tEnd = 30           ;%從0開始計算tEnd秒
 u = 10              ;%x方向速度
 v = 10              ;%y方向速度
-cflx = 0.5           ;%x方向CFL number
-cfly = 1           ;%y方向CFL number
+cflx = 1            ;%x方向CFL number
+cfly = 1            ;%y方向CFL number
 dt = min(cflx*dx/u,cfly*dy/v);%因u=\=v，會使得cfl 過於太大。因為dt 只有1個，
                               %但是會影響x方向及y方向，故需重新計算dt and cfl
 cflx = dt*u/dx      %renew cfl x direction
@@ -32,7 +32,7 @@ t = 0  : dt : tEnd;%切時間網格
 
 %%
 %flux type
-type = 2;%(1)Linear Advection, (2)Burgers' equation
+type =2;%(1)Linear Advection, (2)Burgers' equation
 
 %initial condition
 [X,Y] = meshgrid(x,y);
@@ -61,7 +61,7 @@ for n = 1:length(t)
 	U(:,j) = U(:,j) + 1/6*(k1y+2*k2y+2*k3y+k4y)'*dt;%mean equation
     U(:,1) = (U(:,end)+U(:,1))/2;%periodic bc
     end
-    contourf(x,y,U)
+    mesh(x,y,U)
     grid on
     pause(dt)
 end
