@@ -31,7 +31,7 @@ micro_v = repmat(micro_v,1,nx);%將巨觀速度向”速度空間”展開
 weight  = repmat(weight ,1,nx);%將weight項也向”速度空間”展開，以利積分
 
 %時間離散
-dt = dx*CFL/max(micro_v(:,1));
+dt = dx*cfl/max(micro_v(:,1));
 time = 0:dt:tEnd;
 
 %% 輸入初始條件
@@ -54,11 +54,17 @@ f0 = f_equilibrium(z,marco_u,micro_v,T,theta);%平衡態方程式
 
 %% Marching Scheme
 f = f0;% Load initial condition
+
 for tstep = time
+    %在每個時間步中，利用各微觀量，更新平衡態分布函數
+    f_eq = f_equilibrium(z,marco_u,micro_v,T,theta);
     
+    %為了與conservation law的符號相等，故使用u
+	u_eq = f_eq;
+	u = f;
     
-    
-    
+    %main equation
+    u = u - dt/dx*LF
     
     %plot part
     subplot(2,3,1); plot(x,n(1,:),'o');

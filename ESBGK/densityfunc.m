@@ -3,5 +3,5 @@ function [n,j_x,epsilon] = densityfunc(weight,f0,micro_v)
 %                                   ¯à¶q±K«×(Energy Density)
 
      n = sum(weight .* f0);% Number density
-     j_x = sum(micro_v .* weight .* f0);% Macrospic moment in x
+     j_x = sum(micro_v .* weight .* f0);% Macrospic moment density
      epsilon = sum(1/2*( micro_v.^2 ).* weight .* f0);% Energy Density

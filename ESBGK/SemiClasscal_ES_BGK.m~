@@ -55,7 +55,8 @@ f0 = f_equilibrium(z,marco_u,micro_v,T,theta);%平衡態方程式
 %% Marching Scheme
 f = f0;% Load initial condition
 for tstep = time
-    f_eq = f_equilibrium_1d(r,ux,v,t,theta);
+    %在每個時間步中，更新平衡態分布函數
+    f_eq = f_equilibrium(z,marco_u,micro_v,T,theta);
     
     
     
