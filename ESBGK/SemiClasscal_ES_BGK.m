@@ -8,11 +8,12 @@
 
 %% 輸入條件
 clear all;clc;
+pause()
 x0     = 0            ;% X初始位置
 xEnd   = 1            ;% X結束位置
 dx     = 0.01          ;% 每dx切一格
 tEnd   = 0.1           ;% 從0開始計算tEnd秒
-relax_time = 1/1000  ;% Relaxation time
+relax_time = 1/10000  ;% Relaxation time
 cfl    = 0.1            ;% CFL number
 theta  = -1           ;% (-1) BE, (0) MB, (1) FD.
                        

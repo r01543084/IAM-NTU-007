@@ -17,7 +17,7 @@ dx   = 0.1          ;%每dx切一格
 dy   = 0.1          ;%每dy切一格
 tEnd = 30           ;%從0開始計算tEnd秒
 u = 10              ;%x方向速度
-v = 10              ;%y方向速度
+v = 1               ;%y方向速度
 cflx = 1            ;%x方向CFL number
 cfly = 1            ;%y方向CFL number
 dt = min(cflx*dx/u,cfly*dy/v);%因u=\=v，會使得cfl 過於太大。因為dt 只有1個，
@@ -61,7 +61,9 @@ for n = 1:length(t)
 	U(:,j) = U(:,j) + 1/6*(k1y+2*k2y+2*k3y+k4y)'*dt;%mean equation
     U(:,1) = (U(:,end)+U(:,1))/2;%periodic bc
     end
-    mesh(x,y,U)
+    contourf(x,y,U)
+    %view(135,45)
+    axis tight
     grid on
     pause(dt)
 end
