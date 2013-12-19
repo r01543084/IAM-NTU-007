@@ -11,8 +11,8 @@ clear all;clc;
 x0     = 0            ;% X初始位置
 xEnd   = 1            ;% X結束位置
 dx     = 0.01          ;% 每dx切一格
-tEnd   = 0.1           ;% 從0開始計算tEnd秒
-relax_time = 1/1000  ;% Relaxation time
+tEnd   = 30           ;% 從0開始計算tEnd秒
+relax_time = 1/10000  ;% Relaxation time
 cfl    = 0.1            ;% CFL number
 theta  = -1           ;% (-1) BE, (0) MB, (1) FD.
                        
@@ -64,8 +64,8 @@ for tstep = time
 	u = f;
     
     %main equation
-    [uR, uL] = weno3(u);
-    u = u - dt/dx*LF_flux(mirco_v,uR,uL)+(dt/relax_time)*(u_eq-u);
+    [uR uL] = weno3(u);
+    u = u - dt/dx*LF_flux(mirco_v,uR,uL);
     f = u;
     
     %利用新得到的f(分布函數)求得可得數密度(n)、通量or動量密度(j_x or nu)、能量密度
@@ -94,7 +94,7 @@ for tstep = time
     subplot(2,3,6); plot(x,epsilon(1,:),'.');
     axis tight; title('Energy Density')
     grid on
-    pause(dt)
+    pause()
 end
 
 
