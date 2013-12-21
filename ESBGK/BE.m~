@@ -9,11 +9,7 @@ function BE = BE(z,nu)
 % As we can notice this function is of the order $\nu$ 
 
 L   = 1:50; % up to l = 50 to ensure a fair accuaracy
-if length(z) == 1
-    BE  = sum((z.^L) ./ (L.^nu));
-else
-    L = repmat(L',1,length(z));
-    z = repmat(z,50,1);
-    BE  = sum((z.^L) ./ (L.^nu));
-end
+L = repmat(L',1,length(z));
+z = repmat(z,50,1);
+BE  = sum((z.^L) ./ (L.^nu));
 return
