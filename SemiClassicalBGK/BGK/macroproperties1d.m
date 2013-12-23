@@ -10,10 +10,10 @@ function [z,marco_u,T,pressure] = macroproperties1d(n,j_x,epsilon,nx,nv,theta)
 switch theta
     case{-1} % BE
     % If BE: we apply bisection method to the approx BE distribution Eq.
-        r_a = 0.001; r_b = 0.99; tol = 1e-7;
+        r_a = 0.001; r_b = 0.99; tol = 1e-7;L   = 1:50;
         for i = 1:nx
-        psi = @(r_x) 2*epsilon(i)- BE(r_x,1.5)*(n(i)/BE(r_x,0.5))^3/(2*pi) ...
-        - n(i)*(marco_u(i)^2);
+        psi = @(r_x) 2*epsilon(i)-sum((r_x.^L) ./ (L.^1.5))* ...
+        (n(i)/sum((r_x.^L) ./ (L.^0.5)))^3/(2*pi)- n(i)*(marco_u(i)^2);
         r_p(i) = bisection(psi,r_a,r_b,tol);
         end
         z = r_p;
