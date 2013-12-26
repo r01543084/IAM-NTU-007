@@ -8,14 +8,17 @@
 
 %% 輸入條件
 clear all;clc;
+tic
 x0     = 0            ;% X初始位置
 xEnd   = 1            ;% X結束位置
 dx     = 0.01          ;% 每dx切一格
 tEnd   = 0.1           ;% 從0開始計算tEnd秒
 relax_time = 1/10000  ;% Relaxation time
 cfl    = 0.1            ;% CFL number
-theta  = -1           ;% (-1) BE, (0) MB, (1) FD.
-                       
+theta  = 0           ;% (-1) BE, (0) MB, (1) FD.
+global PRL  CRL MACHLEFT  gamma
+gamma  = 5/3;           
+[xx,dexact,uexact,pexact,mexact,entroexact,energexact] = EulerExact(1,0,1,0.125,0,0.1,tEnd);
 %% 離散時間、速度空間、位置空間
 % 位置空間離散
 x = x0:dx:xEnd;
@@ -27,7 +30,7 @@ nv = 60;%因為 Gauss-Hermite 取nv個點，為了積分速度domain
 [mirco_v,weight] = GaussHermite(nv);%for integrating range: -inf to inf
 weight = weight.*exp(mirco_v.^2);%real weight if not, chack out website
 % http://www.efunda.com/math/num_integration/findgausshermite.cfm
-mirco_v = repmat(mirco_v,1,nx);%將巨觀速度向”速度空間”展開
+mirco_v = repmat(mirco_v,1,nx);%將微觀速度向”速度空間”展開
 weight  = repmat(weight ,1,nx);%將weight項也向”速度空間”展開，以利積分
 
 %時間離散
@@ -74,12 +77,12 @@ for tstep = time
     % UPDATE macroscopic properties 
 	% (here lies a paralellizing computing chalenge)
 	[z,marco_u,T,pressure] = macroproperties1d(n,j_x,epsilon,nx,nv,theta);
-    
+ 
     %plot part
-    subplot(2,3,1); plot(x,n(1,:),'.');
+    subplot(2,3,1); plot(x,n(1,:),'.',xx,dexact,'--');
     axis tight; title('Density')
     grid on
-    subplot(2,3,2); plot(x,pressure(1,:),'.'); 
+    subplot(2,3,2); plot(x,pressure(1,:),'.',xx,pexact,'--'); 
     axis tight; title('Pressure')
     grid on
     subplot(2,3,3); plot(x,T(1,:),'.'); 
@@ -88,10 +91,10 @@ for tstep = time
     subplot(2,3,4); plot(x,z(1,:),'.'); 
     axis tight; title('Fugacity')
     grid on
-    subplot(2,3,5); plot(x,marco_u(1,:),'.');
+    subplot(2,3,5); plot(x,marco_u(1,:),'.',xx,uexact,'--');
     axis tight; title('velocity in x')
     grid on
-    subplot(2,3,6); plot(x,epsilon(1,:),'.');
+    subplot(2,3,6); plot(x,epsilon(1,:),'.',xx,energexact,'--');
     axis tight; title('Energy Density')
     grid on
     pause(dt)
@@ -99,7 +102,7 @@ end
 
 
 
-
+toc
 
 
 

@@ -24,8 +24,8 @@ t = 0  : dt : tEnd;%切時間網格
 type = 1;%(1)Linear Advection, (2)Burgers' equation
 
 %initial condition
-%u = exp(-(x+4).^2)+heaviside(x)-heaviside(x-3);%initial condition
-u = sin(x);
+u = exp(-(x+4).^2)+heaviside(x)-heaviside(x-3);%initial condition
+%u = sin(x);
 
 %%
 %mean progream
@@ -39,10 +39,10 @@ for j = 1:length(t)
 	u = u + 1/6*(k1+2*k2+2*k3+k4)*dt;%mean equation
     u(1) = (u(end)+u(1))/2;%periodic bc
     
-    %uu = exp(-(x+4-a*dt*j).^2)+heaviside(x-a*dt*j)-heaviside(x-3-a*dt*j);
-    uu = sin(x-a*dt*j);
+    uu = exp(-(x+4-a*dt*j).^2)+heaviside(x-a*dt*j)-heaviside(x-3-a*dt*j);
+    %uu = sin(x-a*dt*j);
     plot(x,u,'.',x,uu,'O')
-    axis([x0-1, xEnd+1, min(uu)-0.5, max(uu)+0.5])
+    %axis([x0-1, xEnd+1, min(uu)-0.5, max(uu)+0.5])
     xlabel('x');%水平座標名稱
     ylabel('u(t)');%垂直座標名稱
     title(['time(t) = ',num2str(t(j))]); % 圖形標題

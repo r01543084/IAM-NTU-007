@@ -29,14 +29,15 @@ switch theta
         r_p = bisection(psi,r_a,r_b,tol);
         z(i) = r_p;
         T(i) = n(i)^2/(pi*(FD(r_p,0.5))^2);
-        pressure(i) = epsilon(i) - 1/2*n(i)*(marco_u(i)^2);
+        pressure(i) = 2/3*epsilon(i) - 1/3*n(i)*(marco_u(i)^2);
         end        
     
     case{0} % MB
     % IF MB: the task is much simple.
+        pressure = 2/3*epsilon - 1/3.*n.*marco_u.^2;
         T = 4*epsilon./n - 2*marco_u.^2;
         z = n./sqrt(pi.*T);
-        pressure = epsilon - 1/2.*n.*marco_u.^2;
+        
     otherwise 
         error('theta can only be: -1, 0, +1 ');
 end

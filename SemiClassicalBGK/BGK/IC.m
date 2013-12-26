@@ -1,9 +1,9 @@
-function [z0 u0 T0] = IC(nx)
+function [z0,u0,T0] = IC(nx)
     %SOD's problem
 	p       = [1    0.1  ];%pressure
-	u       = [0.75 0    ];%velocity
+	u       = [0    0    ];%velocity
 	density = [1    0.125];%density
-	E = p+(0.5).*density.*u.^2; % Energy
+	E = 3/2*p+(0.5).*density.*u.^2; % Energy
     T = 4*E./density-2*u.^2;    % Temperature
     z = density./sqrt(pi*T);    % Fugacity
     
