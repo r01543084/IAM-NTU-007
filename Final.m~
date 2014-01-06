@@ -1,6 +1,7 @@
 %%
 %stability 所撰寫之linear advection equation
-%Atmosphere @NTU 2014.1.6
+%空間離散使用upwind method
+%時間離散使用euler forward method
 %%
 %輸入條件
 clear all
@@ -10,7 +11,7 @@ tEnd = 3         ;%從0開始計算tEnd秒
 dt   = 0.1     ;%每dt秒計算一次
 x0   = -pi        ;%X初始位置
 xEnd = pi         ;%X結束位置
-dx   = 0.05     ;%每dx切一格
+dx   = 0.1     ;%每dx切一格
 a    = 0.1       ;%constan(波速)
 cfl    = a*dt/dx   ;%CFL number
 type = 2         ;%初始條件，1為step func，2為sin wave
@@ -32,7 +33,7 @@ am = min(a,0);
 for n = 2 : length(t)%離散時間(t)坐標
     
     %mean equation
-    u = scheme(u,cfl,5);
+    u = scheme(u,cfl,4);
 	
     %exact part
     switch type
@@ -43,8 +44,8 @@ for n = 2 : length(t)%離散時間(t)坐標
     case 2  %sin wave
         
         uu   = sin(x-a*dt*n);%比較用
-        u(end-5:end) = uu(end-5:end);%periodic BC
-        u(1:5) = uu(1:5);
+        %u(end-5:end) = uu(end-5:end);%periodic BC
+        u(1) = uu(1:5);
 end
     
     plot(x,u,'.',x,uu,'--')
