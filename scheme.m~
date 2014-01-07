@@ -1,5 +1,5 @@
-function [u] = scheme(u,cfl,type)
-    switch type
+function [u] = scheme(u,aj,bj,dj,cfl,scheme_type)
+    switch scheme_type
         case 1 % first order upwind method
             u(2:end) = u(2:end) - cfl*(u(2:end)-u(1:end-1));
             
@@ -38,6 +38,20 @@ function [u] = scheme(u,cfl,type)
                            
         case 6 %Time-Centered-Implicit scheme (Trapezoidal differencing method)
             
+        %velocity part
+        cp  = circshift(u,[0,-1]);
+        cpp = circshift(u,[0,-2]);
+        c = cfl/4*u+cp-cfl/4*cpp;
+        c(end-1:end)=[];%最後兩個無意義，省略
+        
+        %boundary conditions
+        c(1) = c(1)+cfl/4*u(1);
+        c(end) = c(end)-cfl/4*u(end);
+        u(2:end-1) = thomas(aj,bj,c,dj,u(2:end-1));
+        
+        %damping
+        
+        
                                     
                                     
                 

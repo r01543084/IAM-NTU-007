@@ -55,7 +55,7 @@ for i = 1:length(t)
 	xlabel('x');%水平座標名稱
     ylabel('T(t,x)');%垂直座標名稱
     dt*i
-    pause()
+    pause(dt)
     
 end
     
