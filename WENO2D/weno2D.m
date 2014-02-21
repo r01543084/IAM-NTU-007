@@ -8,7 +8,7 @@
 %%
 %periodic bc in LF_flux
 %輸入條件
-clear all;clc;
+clear all;close all;clc;
 x0   = -2*pi        ;%X初始位置
 xEnd = 2*pi         ;%X結束位置
 y0   = -2*pi        ;%y初始位置
@@ -16,14 +16,14 @@ yEnd = 2*pi         ;%y結束位置
 dx   = 0.1          ;%每dx切一格
 dy   = 0.1          ;%每dy切一格
 tEnd = 30           ;%從0開始計算tEnd秒
-u = 10              ;%x方向速度
-v = 1               ;%y方向速度
+u = -10              ;%x方向速度
+v = -11               ;%y方向速度
 cflx = 1            ;%x方向CFL number
 cfly = 1            ;%y方向CFL number
-dt = min(cflx*dx/u,cfly*dy/v);%因u=\=v，會使得cfl 過於太大。因為dt 只有1個，
+dt = min(cflx*dx/abs(u),cfly*dy/abs(v));%因u=\=v，會使得cfl 過於太大。因為dt 只有1個，
                               %但是會影響x方向及y方向，故需重新計算dt and cfl
-cflx = dt*u/dx      %renew cfl x direction
-cfly = dt*v/dy      %renew cfl y direction
+cflx = dt*abs(u)/dx      %renew cfl x direction
+cfly = dt*abs(v)/dy      %renew cfl y direction
 
 %%
 x = x0 : dx : xEnd;%切x方向空間網格
@@ -32,7 +32,7 @@ t = 0  : dt : tEnd;%切時間網格
 
 %%
 %flux type
-type =2;%(1)Linear Advection, (2)Burgers' equation
+type =1;%(1)Linear Advection, (2)Burgers' equation
 
 %initial condition
 [X,Y] = meshgrid(x,y);

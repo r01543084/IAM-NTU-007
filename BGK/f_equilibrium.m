@@ -1,4 +1,4 @@
-function f = f_equilibrium(marco_u,mirco_v,T,density,dv) 
+function [g,h] = f_equilibrium(marco_u,mirco_v,T,density,idx,idv) 
 % Compute equilibrum in 1d cases for:
 %
 % MB:  Maxwell-Boltzmann, theta =  0
@@ -11,5 +11,6 @@ function f = f_equilibrium(marco_u,mirco_v,T,density,dv)
 % t: temperature
 % r: fugacity
 %
-
-f = (density./((2*pi*T*0.287).^(dv/2))) .* exp(-((marco_u-mirco_v).^2)./(2*T*0.287));
+g = density(idx).*exp(-(mirco_v(idv)-marco_u(idx)).^2./(2*T(idx)))./sqrt(2*pi*T(idx));
+%g = density(idx)./(pi*T(idx)).^0.5.*exp(-(marco_u(idx)-mirco_v(idv)).^2./T(idx));
+h = 2*T(idx).*g;

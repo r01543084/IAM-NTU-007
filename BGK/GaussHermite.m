@@ -8,7 +8,7 @@ function [x, w] = GaussHermite(n)
     % will be real.
     
     
-% ï¿?Geert Van Damme
+% ???Geert Van Damme
 % geert@vandamme-iliano.be
 % February 21, 2010    
 

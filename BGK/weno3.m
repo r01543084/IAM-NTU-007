@@ -5,13 +5,20 @@
 %                                   thanks Tony                           %
 %                                                                         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function [uoutR, uoutL] = weno3(u)
+function [uout] = weno3(u)
 %%
 %beta is the same!!
-um  = circshift(u,[0 1]);um(:,1)=um(:,2);
-umm = circshift(u,[0 2]);umm(:,2)=umm(:,3);umm(:,1)=umm(:,2);
-up  = circshift(u,[0 -1]);up(:,end)=up(:,end-1);
-upp = circshift(u,[0 -2]);upp(:,end-1)=upp(:,end-2);upp(:,end)=upp(:,end-1);
+um  = circshift(u,[0 1]);
+umm = circshift(u,[0 2]);
+up  = circshift(u,[0 -1]);
+upp = circshift(u,[0 -2]);
+
+%bc
+um(:,1)=um(:,2);
+umm(:,2)=umm(:,3);umm(:,1)=umm(:,2);
+up(:,end)=up(:,end-1);
+upp(:,end-1)=upp(:,end-2);upp(:,end)=upp(:,end-1);
+
 
 beta1 = 1/3*(4*umm.^2-19*umm.*um+25*um.^2+11*umm.*u-31*um.*u+10*u.^2);    
 beta2 = 1/3*(4*um.^2-13*um.*u+13*u.^2+5*um.*up-13*u.*up+4*up.^2);           
@@ -70,7 +77,5 @@ uoutL = (-1/8*umm+3/4*um+3/8*u).*wL1+ ...
        (15/8*u-5/4*up+3/8*upp).*wL3;
 uoutL = [uoutL uoutL(:,end)];
 
-% uout = [uoutR;uoutL];
-% 
-% uout = [uoutR(:,end) uoutR;
-%           outL outL(:,end)];%periodic bc
+uout = [uoutR;
+        uoutL];

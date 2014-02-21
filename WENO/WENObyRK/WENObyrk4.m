@@ -11,11 +11,11 @@
 clear all;clc;
 x0   = -2*pi        ;%X初始位置
 xEnd = 2*pi         ;%X結束位置
-dx   = 0.1          ;%每dx切一格
+dx   = 0.05          ;%每dx切一格
 tEnd = 10           ;%從0開始計算tEnd秒 
-CFL  = 0.5          ;%CFL number
-a    = 1            ;%constant
-dt   = CFL*dx/a     ;%每dt切一格
+CFL  = 1          ;%CFL number
+a    = -1            ;%constant
+dt   = CFL*dx/abs(a)     ;%每dt切一格
 %%
 x = x0 : dx : xEnd;%切空間網格
 t = 0  : dt : tEnd;%切時間網格
