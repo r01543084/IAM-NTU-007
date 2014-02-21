@@ -13,7 +13,7 @@ x0     = 0            ;% X初始位置
 xEnd   = 1            ;% X結束位置
 dx     = 0.01          ;% 每dx切一格
 tEnd   = 0.1           ;% 從0開始計算tEnd秒
-relax_time = 0.001  ;% Relaxation time
+relax_time = 10^-10  ;% Relaxation time
 cfl    = 1            ;% CFL nuber
 dv     = 3              ;%polytropic constant
 global gamma
@@ -34,6 +34,7 @@ weight = weight.*exp(mirco_v.^2);%real weight if not, chack out website
 %時間離散
 dt = dx*cfl/max(abs(mirco_v));%limit is dt = relax_time*0.8
 time = 0:dt:tEnd;
+ap_coef = (relax_time+dt)/relax_time;
 
 %% 輸入初始條件並將初始條件輸入exact sol.中
 %initial condition
@@ -46,8 +47,8 @@ time = 0:dt:tEnd;
                density(end),marco_u(end),p(end),tEnd);
 
 %將各巨觀量向”速度空間”展開
-idx = repmat(1:nx,nv,1);%density
-idv = repmat((1:nv)',1,nx);%Macroscopic Velocity 
+idx = repmat(1:nx,[nv,1]);%density
+idv = repmat((1:nv)',[1,nx]);%Velocity x domain 
 
 %將各巨觀量帶入平衡態方程式
 [g0,h0] = f_equilibrium(marco_u,mirco_v,T,density,idx,idv);%平衡態方程式
@@ -68,8 +69,10 @@ g_eq = g0;
 h_eq = h0;
 
 for tstep = time
-    
     %main loop use RK 4th
+%--AP start
+    
+    
     %RK step 1
     k1 = ( (-LF_flux(mirco_v,weno3(g),idv,nv))        /dx );
     k2 = ( (-LF_flux(mirco_v,weno3(h),idv,nv))        /dx );
@@ -87,16 +90,29 @@ for tstep = time
     k8 = ( (-LF_flux(mirco_v,weno3(h+k6*dt),idv,nv))  /dx );
     
     %RK final step, sum it!
-    g = g + 1/6*(k1+2*k3+2*k5+k7)*dt+(dt/relax_time)*(g_eq-g);%mean equation
-    h = h + 1/6*(k2+2*k4+2*k6+k8)*dt+(dt/relax_time)*(h_eq-h);%mean equation
+    g1 = g + 1/6*(k1+2*k3+2*k5+k7)*dt;%mean equation
+    h1 = h + 1/6*(k2+2*k4+2*k6+k8)*dt;%mean equation
+        
+    %利用新得到的f(分布函數)求得可得數密度(n)、通量or動量密度(j_x or nu)、能量密度
+    [density1,marco_u1,T1] = densityfunc(g1,h1,weight,mirco_v,idx,idv);
+    
+    %在每個時間步中，利用各微觀量，更新平衡態分布函數
+	[g_eq,h_eq] = f_equilibrium(marco_u1,mirco_v,T1,density1,idx,idv);
+
+%--AP end    
+    
+    
+    %RK final step, sum it!
+    g = (g + 1/6*(k1+2*k3+2*k5+k7)*dt+(dt/relax_time)*(g_eq)) / ap_coef;%mean equation
+    h = (h + 1/6*(k2+2*k4+2*k6+k8)*dt+(dt/relax_time)*(h_eq)) / ap_coef;%mean equation
         
     %利用新得到的f(分布函數)求得可得數密度(n)、通量or動量密度(j_x or nu)、能量密度
     [density,marco_u,T,e,p] = densityfunc(g,h,weight,mirco_v,idx,idv);
     
     %在每個時間步中，利用各微觀量，更新平衡態分布函數
 	[g_eq,h_eq] = f_equilibrium(marco_u,mirco_v,T,density,idx,idv);
- 
-    %plot part
+        
+	%plot part
     subplot(1,3,1); 
     meshc(g);
     axis tight; title('bgk function')
@@ -115,7 +131,8 @@ for tstep = time
     subplot(2,3,6); plot(x,marco_u,'.',xx,uexact,'--');
     axis tight; title('velocity in x')
     grid on
-	pause(dt)
+	pause(dt)   
+
 end
 
 
