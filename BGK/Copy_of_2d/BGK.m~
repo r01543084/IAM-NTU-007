@@ -14,14 +14,15 @@ x0     = 0              ;% X初始位置
 xEnd   = 1              ;% X結束位置
 y0     = 0              ;% Y初始位置
 yEnd   = 1              ;% Y結束位置
-dx     = 0.005          ;% 每dx切一格
-dy     = 0.005          ;% 每dy切一格
+dx     = 1/50           ;% 每dx切一格
+dy     = 1/50           ;% 每dy切一格
 tEnd   = 0.3            ;% 從0開始計算tEnd秒
 r_time = 10^-8          ;% Relaxation time
 cfl    = 1              ;% CFL nuber
-ic_case = 7             ;%IC. case
+dv     = 3              ;%polytropic constant
+ic_case = 5             ;%IC. case
 write_ans = 1           ;%(0)no,(1)yes
-draw = 0                ;%(0)no,(1)yes
+draw = 1                ;%(0)no,(1)yes
 counter = 0             ;%counter
 using_time = 0          ;%how many time we use in this case
 %% 離散時間、速度空間、位置空間
@@ -59,9 +60,6 @@ ny = length(y);
         %創資料夾
         mkdir(ID,'T');mkdir(ID,'density');mkdir(ID,'p');
         mkdir(ID,'e');mkdir(ID,'Ux');mkdir(ID,'Uy');
-        %save parameter
-        all_parameter = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/all_parameter.mat'];
-        save(all_parameter);
     end
 
 %% 輸入初始條件並將初始條件輸入exact sol.中
@@ -188,8 +186,6 @@ for tstep = time
     %在每個時間步中，利用各微觀量，更新平衡態分布函數
 	[g_eq,h_eq] = f_equilibrium(marco_ux,mirco_vx,marco_uy,mirco_vy,T,density,id_space...
         ,idvx(:,1:end-1,:,:),idvy(1:end-1,:,:,:));
-    
-    %Saving part
     if write_ans == 1 && (mod(tstep,5*dt) == 0 || tstep == time(end))
         counter = counter+1;
         tt = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/T/T',num2str(counter),'.mat'];
@@ -204,17 +200,13 @@ for tstep = time
         save(tt,'marco_ux');
         tt = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/Uy/Uy',num2str(counter),'.mat'];
         save(tt,'marco_uy');
+        
     end
-    
 end
+space = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/space.mat'];
+save(space,'x','y');
 using_time = toc;
-
-%plot part
 if draw == 1
-    %load all_parameter
-    all_parameter = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/all_parameter','.mat'];
-    load(all_parameter);
-    
     for i =1:counter
         %tell matlab go where to find data
         TT=['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/T/T',num2str(i),'.mat'];
