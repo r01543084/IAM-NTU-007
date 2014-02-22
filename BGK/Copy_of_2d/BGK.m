@@ -8,6 +8,7 @@
 % thanks Tony dimensionless coef.
 %% 輸入條件
 clear all;close all;clc;
+if ic_case = 1:19
 tic
 name      ='CBGK2d';  % Simulation Name
 x0     = 0              ;% X初始位置
@@ -19,10 +20,9 @@ dy     = 0.005          ;% 每dy切一格
 tEnd   = 0.3            ;% 從0開始計算tEnd秒
 r_time = 10^-8          ;% Relaxation time
 cfl    = 1              ;% CFL nuber
-ic_case = 7             ;%IC. case
+%ic_case = 7             ;%IC. case
 write_ans = 1           ;%(0)no,(1)yes
 draw = 0                ;%(0)no,(1)yes
-counter = 0             ;%counter
 using_time = 0          ;%how many time we use in this case
 %% 離散時間、速度空間、位置空間
 % 位置空間離散
@@ -35,14 +35,14 @@ ny = length(y);
 %速度空間離散(Velocity-Space)
 
     %x velocity
-    nvx = 32;%因為 Gauss-Hermite 取nv個點，為了積分速度domain
+    nvx = 36;%因為 Gauss-Hermite 取nv個點，為了積分速度domain
             %order 為 2*nv-1
     [mirco_vx,weightx] = GaussHermite(nvx);%for integrating range: -inf to inf
     weightx = weightx.*exp(mirco_vx.^2);%real weight if not, chack out website
     % http://www.efunda.com/math/num_integration/findgausshermite.cfm
 
     %y velocity
-    nvy = 32;
+    nvy = 36;
     [mirco_vy,weighty] = GaussHermite(nvy);
     weighty = weighty.*exp(mirco_vy.^2);
 
@@ -107,7 +107,9 @@ disp(sum(sum(T-T1)))
     g_eq = g0;
     h_eq = h0;
     disp('Successful')
-    
+
+    %main loop
+    counter = 0             ;%counter
 for tstep = time
     clc
     tstep
@@ -207,14 +209,15 @@ for tstep = time
     end
     
 end
+%saving this case using time
 using_time = toc;
+tt = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/using_time','.mat'];
+save(tt,'using_time','counter');
 
-%plot part
+%% plot part
+    % if you don't have any initial condition, then double click
+    % all_parameter. And if no drawing, recheck 'draw' and 'counter' number.
 if draw == 1
-    %load all_parameter
-    all_parameter = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/all_parameter','.mat'];
-    load(all_parameter);
-    
     for i =1:counter
         %tell matlab go where to find data
         TT=['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/T/T',num2str(i),'.mat'];
@@ -228,20 +231,21 @@ if draw == 1
         load(TT);load(DD);load(pp);load(ee);load(UUx);load(UUy);
         
         %plot
-        subplot(2,3,1); contour(x,y,T,25); axis([x0,xEnd,y0,yEnd]);
-        title('Temperature');grid on
-        subplot(2,3,2); contour(x,y,density,25); axis([x0,xEnd,y0,yEnd]);
-        title('Density');grid on
-        subplot(2,3,3); contour(x,y,e,25); axis([x0,xEnd,y0,yEnd]);
-        title('Internal Energy');grid on
-        subplot(2,3,4); contour(x,y,p,25); axis([x0,xEnd,y0,yEnd]);
-        title('Pressure');grid on
-        subplot(2,3,5); contour(x,y,marco_ux,25); axis([x0,xEnd,y0,yEnd]);
-        title('Marcoscopic Ux');grid on
-        subplot(2,3,6); contour(x,y,marco_uy,25); axis([x0,xEnd,y0,yEnd]);
-        title('Marcoscopic Uy');grid on
+        subplot(2,3,1); contourf(x,y,T,25); axis([x0,xEnd,y0,yEnd]);
+        axis equal; title('Temperature');grid on
+        subplot(2,3,2); contourf(x,y,density,25); axis([x0,xEnd,y0,yEnd]);
+        axis equal; title('Density');grid on
+        subplot(2,3,3); contourf(x,y,e,25); axis([x0,xEnd,y0,yEnd]);
+        axis equal; title('Internal Energy');grid on
+        subplot(2,3,4); contourf(x,y,p,25); axis([x0,xEnd,y0,yEnd]);
+        axis equal; title('Pressure');grid on
+        subplot(2,3,5); contourf(x,y,marco_ux,25); axis([x0,xEnd,y0,yEnd]);
+        axis equal; title('Marcoscopic Ux');grid on
+        subplot(2,3,6); contourf(x,y,marco_uy,25); axis([x0,xEnd,y0,yEnd]);
+        axis equal; title('Marcoscopic Uy');grid on
         pause(0.5)
     end
 else
+    disp('no drawing')
 end
-
+end
