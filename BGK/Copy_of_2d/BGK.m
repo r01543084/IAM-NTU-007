@@ -17,7 +17,7 @@ dx     = 0.01          ;% 每dx切一格
 dy     = 0.01          ;% 每dy切一格
 tEnd   = 0.3            ;% 從0開始計算tEnd秒
 relax_time = 10^-8      ;% Relaxation time
-cfl    = 2              ;% CFL nuber
+cfl    = 1              ;% CFL nuber
 dv     = 3              ;%polytropic constant
 ic_case = 5             ;%IC. case
 %% 離散時間、速度空間、位置空間
@@ -31,14 +31,14 @@ ny = length(y);
 %速度空間離散(Velocity-Space)
 
 %x velocity
-nvx = 34;%因為 Gauss-Hermite 取nv個點，為了積分速度domain
+nvx = 30;%因為 Gauss-Hermite 取nv個點，為了積分速度domain
         %order 為 2*nv-1
 [mirco_vx,weightx] = GaussHermite(nvx);%for integrating range: -inf to inf
 weightx = weightx.*exp(mirco_vx.^2);%real weight if not, chack out website
 % http://www.efunda.com/math/num_integration/findgausshermite.cfm
 
 %y velocity
-nvy = 34;
+nvy = 30;
 [mirco_vy,weighty] = GaussHermite(nvy);
 weighty = weighty.*exp(mirco_vy.^2);
 
@@ -74,7 +74,7 @@ fprintf('完成\n')
 %利用平衡態方程式積分(Gauss-Hermite)可得數密度(n)、通量or動量密度(j_x or nu)、
 %                                   能量密度(Energy Density)
 [density1,marco_ux1,marco_uy1,T1] = densityfunc(g0,h0,weightx,mirco_vx,weighty,mirco_vy...
-                                    ,id_space,idvx(:,1:end-1,:,:),idvy(1:end-1,:,:,:));
+                                    ,idvx(:,1:end-1,:,:),idvy(1:end-1,:,:,:));
 fprintf('測試是否使用BGK求得之巨觀量，與初始條件相等\n')
 disp(sum(sum(density-density1)))
 disp(sum(sum(marco_ux-marco_ux1)))
