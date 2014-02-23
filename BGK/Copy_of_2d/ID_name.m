@@ -1,4 +1,4 @@
-function [ID, IDn] = ID_name(name,theta,nx,ny,RK_stages,tau,IC_case)
+function [ID, IDn] = ID_name(name,theta,nx,ny,nvx,nvy,RK_stages,tau,IC_case)
 %% ID name generator 
 % Generates ID and IDn for an specific simulation using the controling 
 % parameters.
@@ -18,6 +18,8 @@ end
 % Elements used
 xelements  = num2str(nx);
 yelements  = num2str(ny);
+vxelements  = num2str(nvx);
+vyelements  = num2str(nvy);
 % RK stages
 RKs = num2str(RK_stages);
 % Relaxation time
@@ -28,5 +30,7 @@ ic = num2str(IC_case);
 f = '.plt';
 
 %% Generate ID
-IDn = [name,'-',statistic,'-',xelements,'x',yelements,'RK',RKs,'rtime',rtime,'-','IC',ic,f];
-ID = [name,'-',statistic,'-',xelements,'x',yelements,'RK',RKs,'rtime',rtime,'-','IC',ic];
+IDn = [name,'-',statistic,'-',xelements,'x',yelements,'x',vxelements,'x',vxelements,...
+    'RK',RKs,'rtime',rtime,'-','IC',ic,f];
+ID = [name,'-',statistic,'-',xelements,'x',yelements,'x',vxelements,'x',vxelements,...
+    'RK',RKs,'rtime',rtime,'-','IC',ic];
