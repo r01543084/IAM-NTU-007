@@ -17,8 +17,8 @@ x0     = 0                  ;% X初始位置
 xEnd   = 1                  ;% X結束位置
 y0     = 0                  ;% Y初始位置
 yEnd   = 1                  ;% Y結束位置
-dx     = 1/200               ;% 每dx切一格
-dy     = 1/200               ;% 每dy切一格
+dx     = 1/50               ;% 每dx切一格
+dy     = 1/50               ;% 每dy切一格
 tEnd   = time_ic(ic_case)   ;% 從0開始計算tEnd秒
 r_time = 10^-8              ;% Relaxation time
 cfl    = 1                  ;% CFL nuber
@@ -63,7 +63,7 @@ ny = length(y);
         mkdir(ID,'T');mkdir(ID,'density');mkdir(ID,'p');
         mkdir(ID,'e');mkdir(ID,'Ux');mkdir(ID,'Uy');
         %save parameter
-        all_parameter = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/all_parameter.mat'];
+        all_parameter = [ID,'/all_parameter.mat'];
         save(all_parameter);
     end
 
@@ -216,17 +216,17 @@ for tstep = time
     %Saving part
     if write_ans == 1 && (mod(tstep,shutter_time*dt) == 0 || tstep == time(end))
         counter = counter+1;
-        tt = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/T/T',num2str(counter),'.mat'];
+        tt = [ID,'/T/T',num2str(counter),'.mat'];
         save(tt,'T','tstep');
-        tt = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/density/density',num2str(counter),'.mat'];
+        tt = [ID,'/density/density',num2str(counter),'.mat'];
         save(tt,'density','tstep');
-        tt = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/p/p',num2str(counter),'.mat'];
+        tt = [ID,'/p/p',num2str(counter),'.mat'];
         save(tt,'p','tstep');
-        tt = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/e/e',num2str(counter),'.mat'];
+        tt = [ID,'/e/e',num2str(counter),'.mat'];
         save(tt,'e','tstep');
-        tt = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/Ux/Ux',num2str(counter),'.mat'];
+        tt = [ID,'/Ux/Ux',num2str(counter),'.mat'];
         save(tt,'marco_ux','tstep');
-        tt = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/Uy/Uy',num2str(counter),'.mat'];
+        tt = [ID,'/Uy/Uy',num2str(counter),'.mat'];
         save(tt,'marco_uy','tstep');
     end
     
@@ -250,7 +250,7 @@ end
     
 %saving this case using time
 using_time = toc;
-tt = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/using_time','.mat'];
+tt = [ID,'/using_time','.mat'];
 save(tt,'using_time','counter');
 
 %% plot part
@@ -261,12 +261,12 @@ save(tt,'using_time','counter');
     if draw == 2
         for i =1:counter
             %tell matlab go where to find data
-            TT=['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/T/T',num2str(i),'.mat'];
-            DD=['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/density/density',num2str(i),'.mat'];
-            pp=['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/p/p',num2str(i),'.mat'];
-            ee=['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/e/e',num2str(i),'.mat'];
-            UUx=['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/Ux/Ux',num2str(i),'.mat'];
-            UUy=['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/Uy/Uy',num2str(i),'.mat'];
+            TT=[ID,'/T/T',num2str(i),'.mat'];
+            DD=[ID,'/density/density',num2str(i),'.mat'];
+            pp=[ID,'/p/p',num2str(i),'.mat'];
+            ee=[ID,'/e/e',num2str(i),'.mat'];
+            UUx=[ID,'/Ux/Ux',num2str(i),'.mat'];
+            UUy=[ID,'/Uy/Uy',num2str(i),'.mat'];
             
             %load data
             load(TT);load(DD);load(pp);load(ee);load(UUx);load(UUy);
