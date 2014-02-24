@@ -8,9 +8,9 @@
 % thanks Tony dimensionless coef.
 %% 輸入條件
 clear all;close all;clc;
-time_ic = [0.2 0.2  0.3 0.25 0.23 0.3 0.25 0.25 0.3 0.15 ... 
+time_ic = [0.2 0.2 0.3 0.25 0.23 0.3 0.25 0.25 0.3 0.15 ... 
            0.3 0.25 0.3 0.1  0.2  0.2 0.3  0.2  0.3      ];
-for ic_case = 7
+for ic_case = 5
 tic
 name      ='CBGK2d';  % Simulation Name
 x0     = 0                  ;% X初始位置
@@ -23,7 +23,7 @@ tEnd   = time_ic(ic_case)   ;% 從0開始計算tEnd秒
 r_time = 10^-8              ;% Relaxation time
 cfl    = 1                  ;% CFL nuber
 %ic_case = 7                ;%IC. case
-write_ans = 1               ;%(0)no,(1)yes
+write_ans = 0               ;%(0)no,(1)yes
 draw = 2                    ;%(0)no,(1)in time, (2)last time
 using_time = 0              ;%how many time we use in this case
 pic_num = 20                ;%how many picture u take
@@ -234,22 +234,22 @@ for tstep = time
         %plot
         subplot(2,3,1); contourf(x,y,T,25); axis([x0,xEnd,y0,yEnd]);
         axis equal; title({['Temperature'];['time=',num2str(tstep)]});grid on
-        subplot(2,3,2); contourf(x,y,density,25); axis([x0,xEnd,y0,yEnd]);
+        subplot(2,3,2); contourf(x,y,density,55); axis([x0,xEnd,y0,yEnd]);
         axis equal; title({['Density'];['time=',num2str(tstep)]});grid on
-        subplot(2,3,3); contourf(x,y,e,25); axis([x0,xEnd,y0,yEnd]);
+        subplot(2,3,3); contourf(x,y,e,55); axis([x0,xEnd,y0,yEnd]);
         axis equal; title({['Internal Energy'];['time=',num2str(tstep)]});grid on
-        subplot(2,3,4); contourf(x,y,p,25); axis([x0,xEnd,y0,yEnd]);
+        subplot(2,3,4); contourf(x,y,p,55); axis([x0,xEnd,y0,yEnd]);
         axis equal; title({['Pressure'];['time=',num2str(tstep)]});grid on
-        subplot(2,3,5); contourf(x,y,marco_ux,25); axis([x0,xEnd,y0,yEnd]);
+        subplot(2,3,5); contourf(x,y,marco_ux,55); axis([x0,xEnd,y0,yEnd]);
         axis equal; title({['Marcoscopic Ux'];['time=',num2str(tstep)]});grid on
-        subplot(2,3,6); contourf(x,y,marco_uy,25); axis([x0,xEnd,y0,yEnd]);
+        subplot(2,3,6); contourf(x,y,marco_uy,55); axis([x0,xEnd,y0,yEnd]);
         axis equal; title({['Marcoscopic Uy'];['time=',num2str(tstep)]});grid on
         pause(0.5)
     end
 end
     
 %saving this case using time
-using_time = toc;
+using_time = toc/3600;
 tt = [ID,'/using_time','.mat'];
 save(tt,'using_time','counter');
 
@@ -274,15 +274,15 @@ save(tt,'using_time','counter');
             %plot
             subplot(2,3,1); contourf(x,y,T,25); axis([x0,xEnd,y0,yEnd]);
             axis equal; title({['Temperature'];['time=',num2str(tstep)]});grid on
-            subplot(2,3,2); contourf(x,y,density,25); axis([x0,xEnd,y0,yEnd]);
+            subplot(2,3,2); contourf(x,y,density,55); axis([x0,xEnd,y0,yEnd]);
             axis equal; title({['Density'];['time=',num2str(tstep)]});grid on
-            subplot(2,3,3); contourf(x,y,e,25); axis([x0,xEnd,y0,yEnd]);
+            subplot(2,3,3); contourf(x,y,e,55); axis([x0,xEnd,y0,yEnd]);
             axis equal; title({['Internal Energy'];['time=',num2str(tstep)]});grid on
-            subplot(2,3,4); contourf(x,y,p,25); axis([x0,xEnd,y0,yEnd]);
+            subplot(2,3,4); contourf(x,y,p,55); axis([x0,xEnd,y0,yEnd]);
             axis equal; title({['Pressure'];['time=',num2str(tstep)]});grid on
-            subplot(2,3,5); contourf(x,y,marco_ux,25); axis([x0,xEnd,y0,yEnd]);
+            subplot(2,3,5); contourf(x,y,marco_ux,55); axis([x0,xEnd,y0,yEnd]);
             axis equal; title({['Marcoscopic Ux'];['time=',num2str(tstep)]});grid on
-            subplot(2,3,6); contourf(x,y,marco_uy,25); axis([x0,xEnd,y0,yEnd]);
+            subplot(2,3,6); contourf(x,y,marco_uy,55); axis([x0,xEnd,y0,yEnd]);
             axis equal; title({['Marcoscopic Uy'];['time=',num2str(tstep)]});grid on
             pause(0.5)
         end

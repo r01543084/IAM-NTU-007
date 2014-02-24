@@ -8,7 +8,7 @@
 % thanks Tony dimensionless coef.
 %% 輸入條件
 clear all;close all;clc;
-time_ic = [0.2 0.2  0.3 0.25 0.23 0.3 0.25 0.25 0.3 0.15 ... 
+time_ic = [0.2 0.2 0.3 0.25 0.23 0.3 0.25 0.25 0.3 0.15 ... 
            0.3 0.25 0.3 0.1  0.2  0.2 0.3  0.2  0.3      ];
 for ic_case = 7
 tic
@@ -17,8 +17,8 @@ x0     = 0                  ;% X初始位置
 xEnd   = 1                  ;% X結束位置
 y0     = 0                  ;% Y初始位置
 yEnd   = 1                  ;% Y結束位置
-dx     = 1/200               ;% 每dx切一格
-dy     = 1/200               ;% 每dy切一格
+dx     = 1/50               ;% 每dx切一格
+dy     = 1/50               ;% 每dy切一格
 tEnd   = time_ic(ic_case)   ;% 從0開始計算tEnd秒
 r_time = 10^-8              ;% Relaxation time
 cfl    = 1                  ;% CFL nuber
@@ -63,7 +63,7 @@ ny = length(y);
         mkdir(ID,'T');mkdir(ID,'density');mkdir(ID,'p');
         mkdir(ID,'e');mkdir(ID,'Ux');mkdir(ID,'Uy');
         %save parameter
-        all_parameter = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/all_parameter.mat'];
+        all_parameter = [ID,'/all_parameter.mat'];
         save(all_parameter);
     end
 
@@ -216,17 +216,17 @@ for tstep = time
     %Saving part
     if write_ans == 1 && (mod(tstep,shutter_time*dt) == 0 || tstep == time(end))
         counter = counter+1;
-        tt = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/T/T',num2str(counter),'.mat'];
+        tt = [ID,'/T/T',num2str(counter),'.mat'];
         save(tt,'T','tstep');
-        tt = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/density/density',num2str(counter),'.mat'];
+        tt = [ID,'/density/density',num2str(counter),'.mat'];
         save(tt,'density','tstep');
-        tt = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/p/p',num2str(counter),'.mat'];
+        tt = [ID,'/p/p',num2str(counter),'.mat'];
         save(tt,'p','tstep');
-        tt = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/e/e',num2str(counter),'.mat'];
+        tt = [ID,'/e/e',num2str(counter),'.mat'];
         save(tt,'e','tstep');
-        tt = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/Ux/Ux',num2str(counter),'.mat'];
+        tt = [ID,'/Ux/Ux',num2str(counter),'.mat'];
         save(tt,'marco_ux','tstep');
-        tt = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/Uy/Uy',num2str(counter),'.mat'];
+        tt = [ID,'/Uy/Uy',num2str(counter),'.mat'];
         save(tt,'marco_uy','tstep');
     end
     
@@ -249,8 +249,8 @@ for tstep = time
 end
     
 %saving this case using time
-using_time = toc;
-tt = ['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/using_time','.mat'];
+using_time = toc/3600;
+tt = [ID,'/using_time','.mat'];
 save(tt,'using_time','counter');
 
 %% plot part
@@ -261,12 +261,12 @@ save(tt,'using_time','counter');
     if draw == 2
         for i =1:counter
             %tell matlab go where to find data
-            TT=['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/T/T',num2str(i),'.mat'];
-            DD=['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/density/density',num2str(i),'.mat'];
-            pp=['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/p/p',num2str(i),'.mat'];
-            ee=['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/e/e',num2str(i),'.mat'];
-            UUx=['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/Ux/Ux',num2str(i),'.mat'];
-            UUy=['/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/',ID,'/Uy/Uy',num2str(i),'.mat'];
+            TT=[ID,'/T/T',num2str(i),'.mat'];
+            DD=[ID,'/density/density',num2str(i),'.mat'];
+            pp=[ID,'/p/p',num2str(i),'.mat'];
+            ee=[ID,'/e/e',num2str(i),'.mat'];
+            UUx=[ID,'/Ux/Ux',num2str(i),'.mat'];
+            UUy=[ID,'/Uy/Uy',num2str(i),'.mat'];
             
             %load data
             load(TT);load(DD);load(pp);load(ee);load(UUx);load(UUy);
@@ -274,15 +274,15 @@ save(tt,'using_time','counter');
             %plot
             subplot(2,3,1); contourf(x,y,T,25); axis([x0,xEnd,y0,yEnd]);
             axis equal; title({['Temperature'];['time=',num2str(tstep)]});grid on
-            subplot(2,3,2); contourf(x,y,density,25); axis([x0,xEnd,y0,yEnd]);
+            subplot(2,3,2); contourf(x,y,density,30); axis([x0,xEnd,y0,yEnd]);
             axis equal; title({['Density'];['time=',num2str(tstep)]});grid on
-            subplot(2,3,3); contourf(x,y,e,25); axis([x0,xEnd,y0,yEnd]);
+            subplot(2,3,3); contourf(x,y,e,30); axis([x0,xEnd,y0,yEnd]);
             axis equal; title({['Internal Energy'];['time=',num2str(tstep)]});grid on
-            subplot(2,3,4); contourf(x,y,p,25); axis([x0,xEnd,y0,yEnd]);
+            subplot(2,3,4); contourf(x,y,p,30); axis([x0,xEnd,y0,yEnd]);
             axis equal; title({['Pressure'];['time=',num2str(tstep)]});grid on
-            subplot(2,3,5); contourf(x,y,marco_ux,25); axis([x0,xEnd,y0,yEnd]);
+            subplot(2,3,5); contourf(x,y,marco_ux,30); axis([x0,xEnd,y0,yEnd]);
             axis equal; title({['Marcoscopic Ux'];['time=',num2str(tstep)]});grid on
-            subplot(2,3,6); contourf(x,y,marco_uy,25); axis([x0,xEnd,y0,yEnd]);
+            subplot(2,3,6); contourf(x,y,marco_uy,30); axis([x0,xEnd,y0,yEnd]);
             axis equal; title({['Marcoscopic Uy'];['time=',num2str(tstep)]});grid on
             pause(0.5)
         end
