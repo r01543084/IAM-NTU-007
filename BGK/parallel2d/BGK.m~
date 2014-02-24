@@ -232,7 +232,7 @@ for tstep = time
     
     if draw == 1
         %plot
-        subplot(2,3,1); contourf(x,y,T,25); axis([x0,xEnd,y0,yEnd]);
+        subplot(2,3,1); contourf(x,y,T,55); axis([x0,xEnd,y0,yEnd]);
         axis equal; title({['Temperature'];['time=',num2str(tstep)]});grid on
         subplot(2,3,2); contourf(x,y,density,55); axis([x0,xEnd,y0,yEnd]);
         axis equal; title({['Density'];['time=',num2str(tstep)]});grid on
@@ -272,7 +272,7 @@ save(tt,'using_time','counter');
             load(TT);load(DD);load(pp);load(ee);load(UUx);load(UUy);
             
             %plot
-            subplot(2,3,1); contourf(x,y,T,25); axis([x0,xEnd,y0,yEnd]);
+            subplot(2,3,1); contourf(x,y,T,55); axis([x0,xEnd,y0,yEnd]);
             axis equal; title({['Temperature'];['time=',num2str(tstep)]});grid on
             subplot(2,3,2); contourf(x,y,density,55); axis([x0,xEnd,y0,yEnd]);
             axis equal; title({['Density'];['time=',num2str(tstep)]});grid on
