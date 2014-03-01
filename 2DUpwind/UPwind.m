@@ -14,8 +14,8 @@ dy = 0.3;
 tEnd = 30;
 u = 10;%x方向速度
 v = 10;%y方向速度
-cflx = .9;
-cfly = .9;
+cflx = 1;
+cfly = 1;
 dt = min(cflx*dx/u,cfly*dy/v);
 cflx = dt*u/dx
 cfly = dt*v/dy
@@ -28,18 +28,19 @@ t = 0:dt:tEnd;
 
 %%
 [X,Y] = meshgrid(x,y);
-%U = heaviside(X)-heaviside(X-2)+heaviside(Y)-heaviside(Y-2);
+U = heaviside(X-2);
 %U = heaviside(X)-heaviside(X-2)+sin(Y);
-U = exp(-(X).^2-(Y).^2);
+% U = exp(-(X).^2-(Y).^2);
 for i = 1:length(t)
+    U(20:40,20:40)=0;
     U_next = zeros(length(x),length(y));
     U_next(:,2:end) = U(:,2:end)-cflx*(U(:,2:end)-U(:,1:end-1));%x
-    U_next(:,1) = U(:,end);%x
+    U_next(:,1) = 1;%x
     U = U_next;
     U_next(2:end,:) = U(2:end,:)-cfly*(U(2:end,:)-U(1:end-1,:));%y
-    U_next(1,:) = U(end,:);%y
+    U_next(1,:) = 1;%y
     U = U_next;
     mesh(x,y,U)
     grid on
-    pause(dt)
+    pause()
 end

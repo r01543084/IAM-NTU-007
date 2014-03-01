@@ -85,7 +85,7 @@ switch configuration
         uy      = [-0.5606	-1.2172     1.2172      1.1606	];%y velocity
         T = p./(density);    % Temperature
 	case(15)
-        p       = [1        0.4         0.4         -0.4    ];%pressure
+        p       = [1        0.4         0.4         0.4    ];%pressure
         density = [1        0.5197      0.8         0.5313  ];%density
         ux      = [0.1      -0.6259     0.1         0.1     ];%x velocity
         uy      = [-0.3     -0.3        -0.3        0.4276	];%y velocity
@@ -114,16 +114,24 @@ switch configuration
         ux      = [0        0           0           0       ];%x velocity
         uy      = [0.3      -0.3        0.2145      -0.4259 ];%y velocity
         T = p./(density);    % Temperature
+	case(20)
+        p       = [0.1      0.5         0.5         0.1     ];%pressure
+        density = [0.1      7.3/3       7.3/3       0.1     ];%density
+        ux      = [0        1.1711      1.1711      0       ];%x velocity
+        uy      = [0        0           0           0       ];%y velocity
+        T = p./(density);    % Temperature
 end
 
 
     
     %¨ú¤¤ÂI
-    x_middle = ceil(nx/2);
-    y_middle = ceil(ny/2);
-    
-    stagex1 = 1:x_middle; stagex2 = x_middle+1:nx;
-    stagey1 = 1:y_middle; stagey2 = y_middle+1:ny;
+%     x_middle = ceil(nx/2);
+%     y_middle = ceil(ny/2);
+%     
+%     stagex1 = 1:x_middle; stagex2 = x_middle+1:nx;
+%     stagey1 = 1:y_middle; stagey2 = y_middle+1:ny;
+    stagex1 = 1:10; stagex2 = 11:nx;
+    stagey1 = 1:10; stagey2 = 11:ny;
     
     % Initial Condition for our 2D domain
     % Velovity in x

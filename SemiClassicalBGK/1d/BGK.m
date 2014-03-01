@@ -12,7 +12,7 @@ tic
 x0     = 0            ;% X初始位置
 xEnd   = 1            ;% X結束位置
 dx     = 0.005          ;% 每dx切一格
-tEnd   = 0.4           ;% 從0開始計算tEnd秒
+tEnd   = 0.1           ;% 從0開始計算tEnd秒
 relax_time = 0.001  ;% Relaxation time
 cfl    = 1            ;% CFL nuber
 dv     = 3              ;%polytropic constant
@@ -25,7 +25,7 @@ x = x0:dx:xEnd;
 nx = length(x);
 
 %速度空間離散(Velocity-Space)
-nv = 60;%因為 Gauss-Hermite 取nv個點，為了積分速度domain
+nv = 100;%因為 Gauss-Hermite 取nv個點，為了積分速度domain
         %order 為 2*nv-1
 [mirco_v,weight] = GaussHermite(nv);%for integrating range: -inf to inf
 weight = weight.*exp(mirco_v.^2);%real weight if not, chack out website
@@ -93,10 +93,6 @@ for tstep = time
     %利用新得到的f(分布函數)求得可得數密度(n)、通量or動量密度(j_x or nu)、能量密度
     [density,marco_u,T,e,p] = densityfunc(g,h,weight,mirco_v,idx,idv);
     
-    if marco_u(end-1)>0
-        marco_u(end-1) = -marco_u(end-1);
-        marco_u(end) = 0;
-    end
     %在每個時間步中，利用各微觀量，更新平衡態分布函數
         [g_eq,h_eq] = f_equilibrium(marco_u,mirco_v,T,density,idx,idv);
  
