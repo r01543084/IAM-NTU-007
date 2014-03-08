@@ -9,13 +9,14 @@
 %% 輸入條件
 clear all;close all;clc;
 tic
-x0     = 0            ;% X初始位置
-xEnd   = 1            ;% X結束位置
+x0     = 0              ;% X初始位置
+xEnd   = 1              ;% X結束位置
 dx     = 0.005          ;% 每dx切一格
-tEnd   = 0.4           ;% 從0開始計算tEnd秒
-relax_time = 0.001  ;% Relaxation time
-cfl    = 1            ;% CFL nuber
-dv     = 3              ;%polytropic constant
+tEnd   = 0.5            ;% 從0開始計算tEnd秒
+relax_time = 0.001      ;% Relaxation time
+cfl    = 1              ;% CFL nuber
+dv     = 3              ;% polytropic constant
+apha   = 1              ;% 反射(0)>>>>吸收(1)
 global gamma
 gamma  = (dv+2)/dv;        
 
@@ -30,7 +31,9 @@ nv = 60;%因為 Gauss-Hermite 取nv個點，為了積分速度domain
 [mirco_v,weight] = GaussHermite(nv);%for integrating range: -inf to inf
 weight = weight.*exp(mirco_v.^2);%real weight if not, chack out website
 % http://www.efunda.com/math/num_integration/findgausshermite.cfm
-
+weightb = weight;%for boundary weight
+weightb(1:ceil(nv/2))=0;%for boundary weight
+mirco_vb = (mirco_v+abs(mirco_v))/2;%for boundary mirco velocity
 %時間離散
 dt = dx*cfl/max(abs(mirco_v));%limit is dt = relax_time*0.8
 time = 0:dt:tEnd;
@@ -54,7 +57,7 @@ idv = repmat((1:nv)',1,nx);%Macroscopic Velocity
 
 %利用平衡態方程式積分(Gauss-Hermite)可得數密度(n)、通量or動量密度(j_x or nu)、
 %                                   能量密度(Energy Density)
-[density1,marco_u1,T1] = densityfunc(g0,h0,weight,mirco_v,idx,idv);
+[density1,marco_u1,T1] = densityfunc(g0,h0,weight,mirco_v,idv);
 fprintf('測試是否使用BGK求得之巨觀量，與初始條件相等\n')
 disp(sum(density-density1))
 disp(sum(marco_u-marco_u1))
@@ -68,7 +71,7 @@ g_eq = g0;
 h_eq = h0;
 
 for tstep = time
-    
+
     %main loop use RK 4th
     %RK step 1
     k1 = ( (-LF_flux(mirco_v,weno3(g),idv,nv))        /dx );
@@ -89,16 +92,18 @@ for tstep = time
     %RK final step, sum it!
     g = g + 1/6*(k1+2*k3+2*k5+k7)*dt+(dt/relax_time)*(g_eq-g);%mean equation
     h = h + 1/6*(k2+2*k4+2*k6+k8)*dt+(dt/relax_time)*(h_eq-h);%mean equation
-        
-    %利用新得到的f(分布函數)求得可得數密度(n)、通量or動量密度(j_x or nu)、能量密度
-    [density,marco_u,T,e,p] = densityfunc(g,h,weight,mirco_v,idx,idv);
+	
+    %reflaction and diffusive boundary
+    [g(:,end-1),h(:,end-1),g(:,end),h(:,end)] = ...
+        boundaryf(g(:,end-1),h(:,end-1),mirco_v,weightb...
+                                        ,nv,apha);
     
-    if marco_u(end-1)>0
-        marco_u(end-1) = -marco_u(end-1);
-        marco_u(end) = 0;
-    end
+    
+    %利用新得到的f(分布函數)求得可得數密度(n)、通量or動量密度(j_x or nu)、能量密度
+    [density,marco_u,T,E,p] = densityfunc(g,h,weight,mirco_v,idv);
+   
     %在每個時間步中，利用各微觀量，更新平衡態分布函數
-        [g_eq,h_eq] = f_equilibrium(marco_u,mirco_v,T,density,idx,idv);
+	[g_eq,h_eq] = f_equilibrium(marco_u,mirco_v,T,density,idx,idv);
  
 	%plot part
     subplot(1,3,1); 
@@ -108,7 +113,7 @@ for tstep = time
 	ylabel('v - Velocity Space');
 	zlabel('f - Probability');
     grid on
-    view(90,0)
+    view(135,45)
     subplot(2,3,2); 
     plot(x,density,'.',xx,dexact,'--');
     axis tight; title('Density')

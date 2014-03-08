@@ -9,10 +9,10 @@
 %% 輸入條件
 clear all;close all;clc;
 time_ic = [0.2 0.2 0.3 0.25 0.23 0.3 0.25 0.25 0.3 0.15 ... 
-           0.3 0.25 0.3 0.1  0.2  0.2 0.3  0.2  0.3 1      ];
+           0.3 0.25 0.3 0.1  0.2  0.2 0.3  0.2  0.3 0.5      ];
 for ic_case = 20
 %to avoid all_parameter.mat record g and h. Because they are huge.
-clear g h g_star h_star g0 h0
+clear g h g_star h_star g0 h0 idvx idvy id_space
 
 tic
 %normal coef
@@ -24,8 +24,11 @@ tic
     dx     = 1/50               ;% 每dx切一格
     dy     = 1/50               ;% 每dy切一格
     tEnd   = time_ic(ic_case)   ;% 從0開始計算tEnd秒
-    r_time = 10^-8              ;% Relaxation time
+    r_time = 10^-3              ;% Relaxation time
     cfl    = 1                  ;% CFL nuber
+    apha   = 1                ;% reflaction(0)>>>>diffusitive(1)
+    lengthbx = 10               ;% boundary x dir. length
+    lengthby = 20               ;% boundary y dir. length
     write_ans = 1               ;%(0)no,(1)yes
     draw = 2                    ;%(0)no,(1)in time, (2)last time
     using_time = 0              ;%how many time we use in this case
@@ -49,11 +52,14 @@ ny = length(y);
     [mirco_vx,weightx] = GaussHermite(nvx);%for integrating range: -inf to inf
     weightx = weightx.*exp(mirco_vx.^2);%real weight if not, chack out website
     % http://www.efunda.com/math/num_integration/findgausshermite.cfm
-
+    weightxb = weightx;%for boundary weight
+    weightxb(1:ceil(nvx/2))=0;%for boundary weight
     %y velocity
     nvy = 20;
     [mirco_vy,weighty] = GaussHermite(nvy);
     weighty = weighty.*exp(mirco_vy.^2);
+    weightyb = weighty;%for boundary weight
+    weightyb(1:ceil(nvy/2))=0;%for boundary weight
 
 %時間離散
     dt = min(dx*cfl/max(abs(mirco_vx)),dy*cfl/max(abs(mirco_vy)));
@@ -64,7 +70,7 @@ ny = length(y);
 %% 存檔案部分
     if write_ans == 1
         %開檔名
-        [ID, IDn] = ID_name(name,0,nx,ny,nvx,nvy,4,r_time,ic_case);
+        [ID, IDn] = ID_name(name,0,nx,ny,nvx,nvy,4,r_time,ic_case,apha);
         %創資料夾
         mkdir(ID,'T');mkdir(ID,'density');mkdir(ID,'p');
         mkdir(ID,'e');mkdir(ID,'Ux');mkdir(ID,'Uy');
@@ -82,7 +88,7 @@ fprintf('完成\n')
 % index 展開
 fprintf('index 展開...')
     %創立由“空間”向”速度空間”展開之index
-    id_space = repmat(reshape((1:nx*ny),[ny,nx]),[1,1,nvx,nvy]);%空間展開
+    id_space  = repmat(reshape((1:nx*ny),[ny,nx]),[1,1,nvx,nvy]);%空間展開
 
     %創立由“速度空間”向”空間”展開之index
     idvx = reshape(1:nvx  ,[1,1,nvx,1]);%重新定義 1:nvx 的維度
@@ -91,6 +97,22 @@ fprintf('index 展開...')
     idvy = reshape(1:nvy  ,[1,1,1,nvy]);%重新定義 1:nvy 的維度
     idvy = repmat(idvy,[ny+1,nx,nvx,1]);%Microscopic Velocity y 的維度
                                         %ny+1是因為 weno 必須增加 y 方向的維度
+
+    %創立由“空間”向”速度空間”展開之boundary x dir. index
+    id_spacebx = repmat(1:lengthbx,[1,1,nvx,nvy]);%boundary空間展開
+    idvxbx = reshape(1:nvx  ,[1,1,nvx,1]);%重新定義 1:nvx 的維度
+    idvxbx = repmat(idvxbx,[1,lengthbx,1,nvy]);%Microscopic Velocity x 的維度
+
+    idvybx = reshape(1:nvy  ,[1,1,1,nvy]);%重新定義 1:nvy 的維度
+    idvybx = repmat(idvybx,[1,lengthbx,nvx,1]);%Microscopic Velocity y 的維度
+
+    %創立由“空間”向”速度空間”展開之boundary y dir. index
+    id_spaceby = repmat((1:lengthby)',[1,1,nvx,nvy]);%boundary空間展開
+    idvxby = reshape(1:nvx  ,[1,1,nvx,1]);%重新定義 1:nvx 的維度
+    idvxby = repmat(idvxby,[lengthby,1,1,nvy]);%Microscopic Velocity x 的維度
+
+    idvyby = reshape(1:nvy  ,[1,1,1,nvy]);%重新定義 1:nvy 的維度
+    idvyby = repmat(idvyby,[lengthby,1,nvx,1]);%Microscopic Velocity y 的維度
 fprintf('完成\n')
 
 
@@ -159,34 +181,7 @@ for tstep = time
             = densityfunc(g_star(:,i,:,:),h_star(:,i,:,:),weightx,mirco_vx...
             ,weighty,mirco_vy,idvx(:,i,:,:),idvy(1:end-1,i,:,:));
     end
-    	%全反射（Total Reflection boundary）
-        marco_ux(21:30,21:30) = 0;
-        marco_uy(21:30,21:30) = 0;
-    for i = 21:30 
-        if     marco_ux(i,20) > 10^-9	%block left side
-            marco_ux(i,20) = -marco_ux(i,20);
-        elseif marco_ux(i,31) < 10^-9   %block right side
-            marco_ux(i,31) = -marco_ux(i,31);
-        elseif marco_uy(31,i) > 10^-9   %block bottom side
-            marco_uy(31,i) = -marco_uy(31,i);
-        elseif marco_uy(i,20) < 10^-9   %block bottom side
-            marco_uy(i,20) = -marco_uy(i,20);
-        end
-    end
     
-    if     marco_ux(20,20) > 10^-9 && marco_uy(20,20) < 10^-9%左上
-        marco_ux(20,20) = -marco_ux(20,20);
-        marco_uy(20,20) = -marco_uy(20,20);
-    elseif marco_ux(31,20) > 10^-9 && marco_uy(31,20) > 10^-9%左下
-        marco_ux(31,20) = -marco_ux(31,20);
-        marco_uy(31,20) = -marco_uy(31,20);
-    elseif marco_ux(20,31) < 10^-9 && marco_uy(20,31) < 10^-9%右上
-        marco_ux(20,31) = -marco_ux(20,31);
-        marco_uy(20,31) = -marco_uy(20,31);
-    elseif marco_ux(31,31) < 10^-9 && marco_uy(31,31) > 10^-9%右下
-        marco_ux(31,31) = -marco_ux(31,31);
-        marco_uy(31,31) = -marco_uy(31,31);
-    end
     %在每個時間步中，利用各微觀量，更新平衡態分布函數
     parfor i = 1:nx
         [g_eq(:,i,:,:),h_eq(:,i,:,:)] = f_equilibrium(marco_ux...
@@ -199,10 +194,16 @@ for tstep = time
     %RK final step, max it
     disp('RK final step')
     g = (g_star + ap_coef*(g_eq)) / (1+ap_coef);%mean equation
-    h = (h_star + ap_coef*(h_eq)) / (1+ap_coef);%mean equation
-    
-    
+    h = (h_star + ap_coef*(h_eq)) / (1+ap_coef);%mean equation 
     disp('RK Successful')
+
+	% Reflaction and diffusive boundary
+    % x. dir boundary
+    [g(16:35,end-1,:,:),h(16:35,end-1,:,:),g(16:35,end,:,:),h(16:35,end,:,:)] = ...
+        boundaryf(g(16:35,end-1,:,:),h(16:35,end-1,:,:),weightxb...
+                 ,mirco_vx,weighty,mirco_vy,id_spaceby...
+                 ,idvxby,idvyby,apha,lengthby);
+
     %利用新得到的f(分布函數)求得可得數密度(n)、通量or動量密度(j_x or nu)、能量密度
     parfor i=1:nx
         [density(:,i),marco_ux(:,i),marco_uy(:,i),T(:,i),e(:,i),p(:,i)]...
@@ -242,20 +243,9 @@ save(tt,'using_time','counter');
     % And change ur '/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/' to your
     % flie add..
     if draw == 2
-        for i =1:counter
-            %tell matlab go where to find data
-            TT=[ID,'/T/T',num2str(i),'.mat'];
-            DD=[ID,'/density/density',num2str(i),'.mat'];
-            pp=[ID,'/p/p',num2str(i),'.mat'];
-            ee=[ID,'/e/e',num2str(i),'.mat'];
-            UUx=[ID,'/Ux/Ux',num2str(i),'.mat'];
-            UUy=[ID,'/Uy/Uy',num2str(i),'.mat'];
-            
-            %load data
-            load(TT);load(DD);load(pp);load(ee);load(UUx);load(UUy);
-            
+        for i =1:counter       
             %plot
-            contourf_func(x,y,tstep,T,density,p,e,marco_ux,...
+            contourf_func(ID,i,x,y,tstep,T,density,p,e,marco_ux,...
                           marco_uy,lagtime,cline);
                       
             %streamline
