@@ -12,12 +12,12 @@ tic
 x0     = 0            ;% X初始位置
 xEnd   = 1            ;% X結束位置
 dx     = 0.01          ;% 每dx切一格
-tEnd   = 1.0           ;% 從0開始計算tEnd秒
+tEnd   = 0.55           ;% 從0開始計算tEnd秒
 relax_time = 10^-10  ;% Relaxation time
 cfl    = 1            ;% CFL nuber
 dv     = 3              ;%polytropic constant
 tmethod = 'SSPRK4'      ;%時間方法 SSPRK4 or RK4
-apha   = 1              ;% reflaction(0)>>>>diffusitive(1)
+apha   = 0              ;% reflaction(0)>>>>diffusitive(1)
 global gamma
 gamma  = (dv+2)/dv;           
 

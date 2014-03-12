@@ -9,33 +9,34 @@
 %% 輸入條件
 clear all;close all;clc;
 time_ic = [0.2 0.2 0.3 0.25 0.23 0.3 0.25 0.25 0.3 0.15 ... 
-           0.3 0.25 0.3 0.1  0.2  0.2 0.3  0.2  0.3 0.5      ];
+           0.3 0.25 0.3 0.1  0.2  0.2 0.3  0.2  0.3 0.55      ];
 for ic_case = 20
 %to avoid all_parameter.mat record g and h. Because they are huge.
-clear g h g_star h_star g0 h0 idvx idvy id_space
+clear g h g_star h_star g0 h0 idvx idvy id_space 
+clear id_spacebx id_spaceby idvxbx idvybx idvxby idvyby
 
 tic
 %normal coef
     name      ='CBGK2d';  % Simulation Name
-    x0     = 0                  ;% X初始位置
-    xEnd   = 1                  ;% X結束位置
-    y0     = 0                  ;% Y初始位置
-    yEnd   = 1                  ;% Y結束位置
-    dx     = 1/50               ;% 每dx切一格
-    dy     = 1/50               ;% 每dy切一格
-    tEnd   = time_ic(ic_case)   ;% 從0開始計算tEnd秒
-    r_time = 10^-3              ;% Relaxation time
-    cfl    = 1                  ;% CFL nuber
-    apha   = 1                ;% reflaction(0)>>>>diffusitive(1)
-    lengthbx = 10               ;% boundary x dir. length
-    lengthby = 20               ;% boundary y dir. length
-    write_ans = 1               ;%(0)no,(1)yes
-    draw = 2                    ;%(0)no,(1)in time, (2)last time
-    using_time = 0              ;%how many time we use in this case
+    x0          = 0                  ;% X初始位置
+    xEnd        = 1                  ;% X結束位置
+    y0          = 0                  ;% Y初始位置
+    yEnd        = 1                  ;% Y結束位置
+    dx          = 1/50               ;% 每dx切一格
+    dy          = 1/100               ;% 每dy切一格
+    tEnd        = time_ic(ic_case)   ;% 從0開始計算tEnd秒
+    r_time      = 10^-8              ;% Relaxation time
+    cfl         = 1                  ;% CFL nuber
+    apha        = 1                  ;% reflaction(0)>>>>diffusitive(1)
+    lengthbx    = 1                  ;% boundary x dir. length "-" slop = 0
+    lengthby    = 10                 ;% boundary y dir. length "|" slop = NAN
+    write_ans   = 0                  ;%(0)no,(1)yes
+    draw        = 2                  ;%(0)no,(1)in time, (2)last time
+    using_time  = 0                  ;%how many time we use in this case
 %plot coef.
-    pic_num = 40                ;%how many picture u take
-    lagtime = 0.1               ;%plot lag time
-    cline = 40                  ;%contour line number
+    pic_num     = 40                 ;%how many picture u take
+    lagtime     = 0.1                ;%plot lag time
+    cline       = 40                 ;%contour line number
 %% 離散時間、速度空間、位置空間
 % 位置空間離散
 x = x0:dx:xEnd;
@@ -52,14 +53,13 @@ ny = length(y);
     [mirco_vx,weightx] = GaussHermite(nvx);%for integrating range: -inf to inf
     weightx = weightx.*exp(mirco_vx.^2);%real weight if not, chack out website
     % http://www.efunda.com/math/num_integration/findgausshermite.cfm
-    weightxb = weightx;%for boundary weight
-    weightxb(1:ceil(nvx/2))=0;%for boundary weight
+    weightxb = [zeros(1,ceil(nvx/2))'; weightx(ceil(nvx/2)+1:end)];%for boundary weight
+    
     %y velocity
     nvy = 20;
     [mirco_vy,weighty] = GaussHermite(nvy);
     weighty = weighty.*exp(mirco_vy.^2);
-    weightyb = weighty;%for boundary weight
-    weightyb(1:ceil(nvy/2))=0;%for boundary weight
+    weightyb = [zeros(1,ceil(nvx/2))'; weightx(ceil(nvy/2)+1:end)];%for boundary weight
 
 %時間離散
     dt = min(dx*cfl/max(abs(mirco_vx)),dy*cfl/max(abs(mirco_vy)));
@@ -102,7 +102,7 @@ fprintf('index 展開...')
     id_spacebx = repmat(1:lengthbx,[1,1,nvx,nvy]);%boundary空間展開
     idvxbx = reshape(1:nvx  ,[1,1,nvx,1]);%重新定義 1:nvx 的維度
     idvxbx = repmat(idvxbx,[1,lengthbx,1,nvy]);%Microscopic Velocity x 的維度
-
+    % for boundary
     idvybx = reshape(1:nvy  ,[1,1,1,nvy]);%重新定義 1:nvy 的維度
     idvybx = repmat(idvybx,[1,lengthbx,nvx,1]);%Microscopic Velocity y 的維度
 
@@ -110,7 +110,7 @@ fprintf('index 展開...')
     id_spaceby = repmat((1:lengthby)',[1,1,nvx,nvy]);%boundary空間展開
     idvxby = reshape(1:nvx  ,[1,1,nvx,1]);%重新定義 1:nvx 的維度
     idvxby = repmat(idvxby,[lengthby,1,1,nvy]);%Microscopic Velocity x 的維度
-
+    % for boundary
     idvyby = reshape(1:nvy  ,[1,1,1,nvy]);%重新定義 1:nvy 的維度
     idvyby = repmat(idvyby,[lengthby,1,nvx,1]);%Microscopic Velocity y 的維度
 fprintf('完成\n')
@@ -198,12 +198,18 @@ for tstep = time
     disp('RK Successful')
 
 	% Reflaction and diffusive boundary
-    % x. dir boundary
-    [g(16:35,end-1,:,:),h(16:35,end-1,:,:),g(16:35,end,:,:),h(16:35,end,:,:)] = ...
-        boundaryf(g(16:35,end-1,:,:),h(16:35,end-1,:,:),weightxb...
-                 ,mirco_vx,weighty,mirco_vy,id_spaceby...
-                 ,idvxby,idvyby,apha,lengthby);
-
+    [g(21:30,50-1,:,:),h(21:30,50-1,:,:),...%{wall left}
+     g(21:30,50+1,:,:),h(21:30,50+1,:,:),...%{wall right}
+     g(20,50,:,:)     ,h(20,50,:,:)     ,...%{wall top}
+     g(31,50,:,:)     ,h(31,50,:,:)     ,...%{wall bottom}
+     g(21:30,50,:,:)  ,h(21:30,50,:,:)] = ...%{wall}
+        boundaryf(g(21:30,50-1,:,:),h(21:30,50-1,:,:),...%{wall left}
+                  g(21:30,50+1,:,:),h(21:30,50+1,:,:),...%{wall right}
+                  g(20,50,:,:)     ,h(20,50,:,:)     ,...%{wall top}
+                  g(31,50,:,:)     ,h(31,50,:,:)     ,...%{wall bottom}
+                  apha,lengthbx,lengthby,id_spacebx,id_spaceby,idvxbx,idvybx,idvxby,idvyby,...
+                   mirco_vx,mirco_vy,weightx,weighty,weightxb,weightyb);
+               
     %利用新得到的f(分布函數)求得可得數密度(n)、通量or動量密度(j_x or nu)、能量密度
     parfor i=1:nx
         [density(:,i),marco_ux(:,i),marco_uy(:,i),T(:,i),e(:,i),p(:,i)]...
@@ -243,14 +249,27 @@ save(tt,'using_time','counter');
     % And change ur '/Users/Atmosphere/IAM NTU 007/BGK/Copy_of_2d/' to your
     % flie add..
     if draw == 2
-        for i =1:counter       
+        for i =1:counter
+            %tell matlab go where to find data
+            TT=[ID,'/T/T',num2str(i),'.mat'];
+            DD=[ID,'/density/density',num2str(i),'.mat'];
+            pp=[ID,'/p/p',num2str(i),'.mat'];
+            ee=[ID,'/e/e',num2str(i),'.mat'];
+            UUx=[ID,'/Ux/Ux',num2str(i),'.mat'];
+            UUy=[ID,'/Uy/Uy',num2str(i),'.mat'];
+
+            %load data
+            load(TT);load(DD);load(pp);load(ee);load(UUx);load(UUy);
+            
             %plot
-            contourf_func(ID,i,x,y,tstep,T,density,p,e,marco_ux,...
+            contourf_func(x,y,tstep,T,density,p,e,marco_ux,...
                           marco_uy,lagtime,cline);
-                      
+%                   contourf(x,y,p,30)
+% axis equal
+%                   pause(0.5)
             %streamline
 %             [xx,yy] = meshgrid(0:1/50:1,0:1/50:1);
-%             [sx,sy] = meshgrid(0:1/10:1,0:1/10:1);
+%             [sx,sy] = meshgrid(0:1/40:1,0:1/40:1);
 %             streamline(stream2(xx,yy,marco_ux,marco_uy,sx,sy));
         end
     end

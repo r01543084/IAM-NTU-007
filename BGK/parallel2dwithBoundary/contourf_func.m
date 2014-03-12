@@ -1,16 +1,4 @@
-function contourf_func(ID,i,x,y,tstep,T,density,p,e,marco_ux,marco_uy,lagtime,cline)
-    
-
-    %tell matlab go where to find data
-    TT=[ID,'/T/T',num2str(i),'.mat'];
-    DD=[ID,'/density/density',num2str(i),'.mat'];
-    pp=[ID,'/p/p',num2str(i),'.mat'];
-    ee=[ID,'/e/e',num2str(i),'.mat'];
-    UUx=[ID,'/Ux/Ux',num2str(i),'.mat'];
-    UUy=[ID,'/Uy/Uy',num2str(i),'.mat'];
-
-    %load data
-    load(TT);load(DD);load(pp);load(ee);load(UUx);load(UUy);
+function contourf_func(x,y,tstep,T,density,p,e,marco_ux,marco_uy,lagtime,cline)
 
     %plot Temperature
     subplot(2,3,1); axis([x(1),x(end),y(1),y(end)]); contourf(x,y,T,cline)

@@ -12,7 +12,7 @@ tic
 x0     = 0              ;% X初始位置
 xEnd   = 1              ;% X結束位置
 dx     = 0.005          ;% 每dx切一格
-tEnd   = 0.5            ;% 從0開始計算tEnd秒
+tEnd   = 0.1            ;% 從0開始計算tEnd秒
 relax_time = 0.001      ;% Relaxation time
 cfl    = 1              ;% CFL nuber
 dv     = 3              ;% polytropic constant
