@@ -4,7 +4,7 @@ function [g,h,g_w,h_w] = boundaryf(g,h,mirco_v,weightb,nv,apha)
 u_w = 0;%set wall velocity is zero
 
 %use momentum and energy conservation law get T_wall and density_wall
-[n] = densityfunc(g,h,weightb,mirco_v,1:nv);
+n = densityfunc(g,h,weightb,mirco_v,1:nv);
 
 n_w = 2*n;
 T_w = 0.8;

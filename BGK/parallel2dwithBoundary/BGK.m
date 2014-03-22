@@ -154,7 +154,7 @@ for tstep = time
     clc
     tstep
     %main loop use RK AP. 4th
-    
+
     %x dir
     disp('AP. RK x dir. ')
     parfor i = 1:ny
