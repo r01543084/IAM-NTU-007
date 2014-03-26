@@ -9,7 +9,7 @@
 %% 輸入條件
 clear all;close all;clc;
 time_ic = [0.2 0.2 0.3 0.25 0.23 0.3 0.25 0.25 0.3 0.15 ... 
-           0.3 0.25 0.3 0.1  0.2  0.2 0.3  0.2  0.3 0.55      ];
+           0.3 0.25 0.3 0.1  0.2  0.2 0.3  0.2  0.3 1.0      ];
 for ic_case = 20
 %to avoid all_parameter.mat record g and h. Because they are huge.
 clear g h g_star h_star g0 h0 idvx idvy id_space 
@@ -28,9 +28,9 @@ tic
     r_time      = 10^-8              ;% Relaxation time
     cfl         = 1                  ;% CFL nuber
     apha        = 1                  ;% reflaction(0)>>>>diffusitive(1)
-    lengthbx    = 1                  ;% boundary x dir. length "-" slop = 0
-    lengthby    = 10                 ;% boundary y dir. length "|" slop = NAN
-    write_ans   = 0                  ;%(0)no,(1)yes
+    lengthbx    = 151                ;% boundary x dir. length "-" slop = 0
+    lengthby    = 0                 ;% boundary y dir. length "|" slop = NAN
+    write_ans   = 1                  ;%(0)no,(1)yes
     draw        = 2                  ;%(0)no,(1)in time, (2)last time
     using_time  = 0                  ;%how many time we use in this case
 %plot coef.
@@ -153,32 +153,41 @@ disp(sum(sum(abs(T-T1)))*dx*dy)
 for tstep = time
     clc
     tstep
-    %for near boundary node
-    %for top boundary
-    gT_b = dfdx(g(2:3,i,:,:),mirco_v,idv(:,end-1:end,:,:),nv,dx,dt,tmethod,'b');
-    hT_b = dfdx(h(2:3,i,:,:),mirco_v,idv(:,end-1:end,:,:),nv,dx,dt,tmethod,'b');
-    
     
     %main loop use RK AP. 4th
     %x dir
     disp('AP. RK x dir. ')
     parfor i = 1:ny
         g_star(i,:,:,:) = g(i,:,:,:) + dfdx(g(i,:,:,:),mirco_vx,idvx(i,:,:,:)...
-                                            ,nvx,dx,dt,[0,1])*dt;
+                                            ,nvx,dx,dt,[0,1],'n')*dt;
         h_star(i,:,:,:) = h(i,:,:,:) + dfdx(h(i,:,:,:),mirco_vx,idvx(i,:,:,:)...
-                                            ,nvx,dx,dt,[0,1])*dt;
+                                            ,nvx,dx,dt,[0,1],'n')*dt;
                         
     end
+
+	%for near boundary node  
+%     parfor i = 1:nx
+%         %for top boundary x dir. 在此g_bT(1:2,:,:,:)必須帶入g(3:2,:,:,:)
+%         g_bT(:,i,:,:) = g_star(3:-1:2,i,:,:)+dfdx(g_star(6:-1:1,i,:,:),mirco_vy,idvy(1:3,i,:,:),nvy,dy,dt,[],'b');
+%         h_bT(:,i,:,:) = h_star(3:-1:2,i,:,:)+dfdx(h_star(6:-1:1,i,:,:),mirco_vy,idvy(1:3,i,:,:),nvy,dy,dt,[],'b');
+%         %for bottom boundary x dir. 在此g_bB(1:2,:,:,:)必須帶入g(4:5,:,:,:)
+%         g_bB(:,i,:,:) = g_star(4:5,i,:,:)+dfdx(g_star(end-5:end,i,:,:),mirco_vy,idvy(1:3,i,:,:),nvy,dy,dt,[],'b');
+%         h_bB(:,i,:,:) = h_star(4:5,i,:,:)+dfdx(h_star(end-5:end,i,:,:),mirco_vy,idvy(1:3,i,:,:),nvy,dy,dt,[],'b');
+%     end
     
     %y dir
     disp('AP. RK y dir.')
     parfor j = 1:nx
         g_star(:,j,:,:) = g_star(:,j,:,:) + dfdx(g(:,j,:,:),mirco_vy,idvy(:,j,:,:)...
-                                            ,nvy,dy,dt,[1,0])*dt;
+                                            ,nvy,dy,dt,[1,0],'n')*dt;
         h_star(:,j,:,:) = h_star(:,j,:,:) + dfdx(h(:,j,:,:),mirco_vy,idvy(:,j,:,:)...
-                                            ,nvy,dy,dt,[1,0])*dt;
+                                            ,nvy,dy,dt,[1,0],'n')*dt;
     end    
     disp('AP. RK Successful')
+    
+	%將邊界算則結果取代y dir. weno
+%     g_star(3:-1:2,:,:,:) = g_bT;g_star(4:5,:,:,:) = g_bT;
+    
     
     %利用新得到的f(分布函數)求得可得數密度(n)、通量or動量密度(j_x or nu)、能量密度
     parfor i=1:nx
@@ -201,20 +210,17 @@ for tstep = time
     g = (g_star + ap_coef*(g_eq)) / (1+ap_coef);%mean equation
     h = (h_star + ap_coef*(h_eq)) / (1+ap_coef);%mean equation 
     disp('RK Successful')
-
+%%
 	% Reflaction and diffusive boundary
-    [g(21:30,50-1,:,:),h(21:30,50-1,:,:),...%{wall left}
-     g(21:30,50+1,:,:),h(21:30,50+1,:,:),...%{wall right}
-     g(20,50,:,:)     ,h(20,50,:,:)     ,...%{wall top}
-     g(31,50,:,:)     ,h(31,50,:,:)     ,...%{wall bottom}
-     g(21:30,50,:,:)  ,h(21:30,50,:,:)] = ...%{wall}
-        boundaryf(g(21:30,50-1,:,:),h(21:30,50-1,:,:),...%{wall left}
-                  g(21:30,50+1,:,:),h(21:30,50+1,:,:),...%{wall right}
-                  g(20,50,:,:)     ,h(20,50,:,:)     ,...%{wall top}
-                  g(31,50,:,:)     ,h(31,50,:,:)     ,...%{wall bottom}
+    [g(2,:,:,:)     ,h(2,:,:,:)         ,...%{wall top-1}
+     g(end-1,:,:,:) ,h(end-1,:,:,:)     ,...%{wall bottom-1}
+     g(1,:,:,:)     ,h(1,:,:,:)         ,...%{walll top}
+     g(end,:,:,:)   ,h(end,:,:,:)]=      ...%{wall bottom}
+        boundaryf(g(2,:,:,:)     ,h(2,:,:,:)         ,...%{wall top-1}
+                  g(end-1,:,:,:) ,h(end-1,:,:,:)     ,...%{wall bottom-1}
                   apha,lengthbx,lengthby,id_spacebx,id_spaceby,idvxbx,idvybx,idvxby,idvyby,...
                    mirco_vx,mirco_vy,weightx,weighty,weightxb,weightyb);
-               
+               %%
     %利用新得到的f(分布函數)求得可得數密度(n)、通量or動量密度(j_x or nu)、能量密度
     parfor i=1:nx
         [density(:,i),marco_ux(:,i),marco_uy(:,i),T(:,i),e(:,i),p(:,i)]...

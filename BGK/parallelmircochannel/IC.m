@@ -115,9 +115,9 @@ switch configuration
         uy      = [0.3      -0.3        0.2145      -0.4259 ];%y velocity
         T = p./(density);    % Temperature
 	case(20)
-        p       = [0.1      0.955       0.955       0.1     ];%pressure
-        density = [0.1      2.893       2.893       0.1     ];%density
-        ux      = [0        2.3653      2.3653      0       ];%x velocity
+        p       = [0.1      0.2         0.2         0.1     ];%pressure
+        density = [1.0      1.0         1.0         1.0     ];%density
+        ux      = [0        0           0           0       ];%x velocity
         uy      = [0        0           0           0       ];%y velocity
         T = p./(density);    % Temperature
 end
@@ -127,7 +127,7 @@ end
     %¨ú¤¤ÂI
 %     x_middle = ceil(nx/2);
 %     y_middle = ceil(ny/2);
-    x_middle = 48;y_middle = 48;
+    x_middle = 2;y_middle = 2;
     stagex1 = 1:x_middle; stagex2 = x_middle+1:nx;
     stagey1 = 1:y_middle; stagey2 = y_middle+1:ny;
     
