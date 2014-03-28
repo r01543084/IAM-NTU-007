@@ -30,7 +30,7 @@ tic
     apha        = 0.5                ;% reflaction(0)>>>>diffusitive(1)
     lengthbx    = 151                ;% boundary x dir. length "-" slop = 0
     lengthby    = 0                 ;% boundary y dir. length "|" slop = NAN
-    write_ans   = 0                  ;%(0)no,(1)yes
+    write_ans   = 1                  ;%(0)no,(1)yes
     draw        = 1                  ;%(0)no,(1)in time, (2)last time
     using_time  = 0                  ;%how many time we use in this case
 %plot coef.
@@ -166,14 +166,14 @@ for tstep = time
     end
 
 	%for near boundary node  
-    parfor i = 1:nx
-        %for top boundary x dir. 在此g_bT(1:2,:,:,:)必須帶入g(3:2,:,:,:)
-        g_bT(:,i,:,:) = g_star(3:-1:2,i,:,:)+dfdx(g_star(6:-1:1,i,:,:),mirco_vy,idvy(1:3,i,:,:),nvy,dy,dt,[],'b')*dt;
-        h_bT(:,i,:,:) = h_star(3:-1:2,i,:,:)+dfdx(h_star(6:-1:1,i,:,:),mirco_vy,idvy(1:3,i,:,:),nvy,dy,dt,[],'b')*dt;
-        %for bottom boundary x dir. 在此g_bB(1:2,:,:,:)必須帶入g(end-1:end,:,:,:)
-        g_bB(:,i,:,:) = g_star(end-2:end-1,i,:,:)+dfdx(g_star(end-5:end,i,:,:),mirco_vy,idvy(1:3,i,:,:),nvy,dy,dt,[],'b')*dt;
-        h_bB(:,i,:,:) = h_star(end-2:end-1,i,:,:)+dfdx(h_star(end-5:end,i,:,:),mirco_vy,idvy(1:3,i,:,:),nvy,dy,dt,[],'b')*dt;
-    end
+%     parfor i = 1:nx
+%         %for top boundary x dir. 在此g_bT(1:2,:,:,:)必須帶入g(3:2,:,:,:)
+%         g_bT(:,i,:,:) = g_star(3:-1:2,i,:,:)+dfdx(g_star(6:-1:1,i,:,:),mirco_vy,idvy(1:3,i,:,:),nvy,dy,dt,[],'b')*dt;
+%         h_bT(:,i,:,:) = h_star(3:-1:2,i,:,:)+dfdx(h_star(6:-1:1,i,:,:),mirco_vy,idvy(1:3,i,:,:),nvy,dy,dt,[],'b')*dt;
+%         %for bottom boundary x dir. 在此g_bB(1:2,:,:,:)必須帶入g(end-1:end,:,:,:)
+%         g_bB(:,i,:,:) = g_star(end-2:end-1,i,:,:)+dfdx(g_star(end-5:end,i,:,:),mirco_vy,idvy(1:3,i,:,:),nvy,dy,dt,[],'b')*dt;
+%         h_bB(:,i,:,:) = h_star(end-2:end-1,i,:,:)+dfdx(h_star(end-5:end,i,:,:),mirco_vy,idvy(1:3,i,:,:),nvy,dy,dt,[],'b')*dt;
+%     end
     
     %y dir
     disp('AP. RK y dir.')
@@ -186,8 +186,8 @@ for tstep = time
     disp('AP. RK Successful')
     
 	%將邊界算則結果取代y dir. weno
-    g_star(3:-1:2,:,:,:) = g_bT;    g_star(end-2:end-1,:,:,:) = g_bB;
-    h_star(3:-1:2,:,:,:) = h_bT;    h_star(end-2:end-1,:,:,:) = h_bB;
+    g_star(3:-1:2,:,:,:) = g_bT;    %g_star(end-2:end-1,:,:,:) = g_bB;
+    h_star(3:-1:2,:,:,:) = h_bT;    %h_star(end-2:end-1,:,:,:) = h_bB;
     
     %利用新得到的f(分布函數)求得可得數密度(n)、通量or動量密度(j_x or nu)、能量密度
     parfor i=1:nx

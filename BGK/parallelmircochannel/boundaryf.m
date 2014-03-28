@@ -19,8 +19,8 @@ nT_w = 2*nT;% for wall top
 nB_w = 2*nB;% for wall bottom
 
 % wall temperature
-T_wy = 1*ones(1,lengthby)*0.1;%for wall slop = NAN
-T_wx = 1*ones(1,lengthbx)*0.1;%for wall slop = 0
+T_wy = 1*ones(1,lengthby)*0.05;%for wall slop = NAN
+T_wx = 1*ones(1,lengthbx)*0.05;%for wall slop = 0
 
 % use T_wall and density_wall and u_wall get wall distribution equation
 [gT_w,hT_w] = f_equilibrium(ux_wby,mirco_vx,uy_wby,mirco_vy,T_wx,nT_w,id_spacebx,idvxbx,idvybx);

@@ -7,7 +7,7 @@ u_w = 0;%set wall velocity is zero
 n = densityfunc(g,h,weightb,mirco_v,1:nv);
 
 n_w = 2*n;
-T_w = 0.8;
+T_w = 1;
 
 % use T_wall and density_wall and u_wall get wall distribution equation
 [g_w,h_w] = f_equilibrium(u_w,mirco_v,T_w,n_w,1,1:nv);

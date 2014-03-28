@@ -115,7 +115,7 @@ switch configuration
         uy      = [0.3      -0.3        0.2145      -0.4259 ];%y velocity
         T = p./(density);    % Temperature
 	case(20)
-        p       = [0.1      0.2         0.2         0.1     ];%pressure
+        p       = [0.05     0.1         0.1         0.05    ];%pressure
         density = [1.0      1.0         1.0         1.0     ];%density
         ux      = [0        0           0           0       ];%x velocity
         uy      = [0        0           0           0       ];%y velocity
